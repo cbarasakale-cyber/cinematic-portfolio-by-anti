@@ -3,170 +3,581 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CHANDRAKANT | Cinematic Director's Cut by Anti</title>
+    <title>CHANDRAKANT | Cinematic Video Editor & Visual Storyteller</title>
     
     <!-- SEO -->
-    <meta name="description" content="A premium, AI-crafted cinematic portfolio for Chandrakant - Visual Storyteller & Video Editor.">
-    <meta name="theme-color" content="#050505">
+    <meta name="description" content="Chandrakant — Professional video editor & visual storyteller. 150+ projects delivered. Cinematic edits, reels, and long-form content that keeps audiences engaged till the last second.">
+    <meta name="keywords" content="video editor, cinematic editor, reels editor, video editing agency, visual storyteller">
+    <meta name="author" content="Chandrakant">
+    <meta name="theme-color" content="#0b0b0b">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Inter:wght@300;400;500;600&family=Cormorant+Garamond:ital,wght@1,500;1,600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Dancing+Script:wght@400;700&display=swap" rel="stylesheet">
 
-    <!-- Libraries -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-    <script src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
-
+    <!-- CSS -->
     <link rel="stylesheet" href="style.css">
+
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
+    <script src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js" defer></script>
 </head>
 <body>
 
-    <!-- ── DIRECTOR'S INTRO ── -->
-    <div class="loader" id="loader">
-        <div class="loader-content">
-            <div class="loader-line"></div>
-            <div class="loader-text">
-                <span class="word">CINEMATIC</span>
-                <span class="word">PORTFOLIO</span>
-                <span class="word">BY</span>
-                <span class="word accent">ANTI</span>
+    <!-- ═══════════════════════════════════════
+         1. CINEMATIC INTRO LOADER — Design Cover
+         ═══════════════════════════════════════ -->
+    <div class="intro-loader" id="introLoader">
+        <!-- Textures & Depth -->
+        <div class="intro-grain"></div>
+        <div class="intro-vignette"></div>
+
+        <div class="intro-content">
+            <!-- Top Metadata -->
+            <div class="intro-top-meta">
+                <span>VIDEO EDITOR</span>
+                <span class="meta-divider">/</span>
+                <span>GRAPHIC DESIGNER</span>
             </div>
-            <div class="loader-progress">00</div>
+
+            <!-- Main Typography Composition -->
+            <div class="intro-main-wrap">
+                <h1 class="intro-title" id="introTitle">
+                    <span class="char">C</span><span class="char">H</span><span class="char">A</span><span class="char">N</span><span class="char light-source" id="introGlowChar">D</span><span class="char">R</span><span class="char">A</span><span class="char">K</span><span class="char">A</span><span class="char">N</span><span class="char">T</span>
+                </h1>
+
+                <!-- Signature Text (Refined for Fade Fix) -->
+                <div class="intro-signature">
+                    <svg viewBox="0 0 500 150" class="signature-svg">
+                        <!-- Handwriting Path (Will fade out) -->
+                        <path class="signature-path" id="signaturePath" d="M50,100 Q80,20 120,80 Q150,140 190,80 Q220,20 260,80 Q290,140 330,80 Q360,20 400,80" fill="none" stroke="#22c55e" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+                        <!-- Final Text (Will stay) -->
+                        <text x="60" y="105" class="signature-text-plain" id="signatureTextFinal">Portfolio</text>
+                    </svg>
+                </div>
+
+                <!-- Design Selection Box & Tool Icons -->
+                <div class="intro-selection" id="introSelection">
+                    <!-- Tool Icons (Floating near corners) -->
+                    <div class="intro-tool-icon pr" id="iconPr"><span>Pr</span></div>
+                    <div class="intro-tool-icon ai" id="iconAi"><span>Ai</span></div>
+                    <div class="intro-tool-icon dr" id="iconDr">
+                        <svg viewBox="0 0 100 100">
+                            <circle cx="50" cy="35" r="15" fill="currentColor"/>
+                            <circle cx="35" cy="65" r="15" fill="currentColor"/>
+                            <circle cx="65" cy="65" r="15" fill="currentColor"/>
+                        </svg>
+                    </div>
+                    <div class="intro-tool-icon ae" id="iconAe"><span>Ae</span></div>
+
+                    <!-- Corners -->
+                    <div class="sel-corner tl"></div>
+                    <div class="sel-corner tr"></div>
+                    <div class="sel-corner bl"></div>
+                    <div class="sel-corner br"></div>
+                    <!-- Lines -->
+                    <div class="sel-line l"></div>
+                    <div class="sel-line r"></div>
+                    <div class="sel-line t"></div>
+                    <div class="sel-line b"></div>
+                </div>
+            </div>
+
+            <!-- Progress -->
+            <div class="intro-progress-wrap">
+                <div class="intro-progress-bar" id="introProgressBar"></div>
+            </div>
         </div>
     </div>
 
-    <!-- ── NAV ── -->
-    <nav class="nav">
-        <div class="nav-inner">
-            <a href="#hero" class="nav-logo">CHANDRAKANT.</a>
-            <div class="nav-links">
-                <a href="#work" class="nav-link">ARCHIVE</a>
-                <a href="#about" class="nav-link">PHILOSOPHY</a>
-                <a href="#contact" class="nav-link">CONNECT</a>
+    <!-- ═══════════════════════════════════════
+         NAVIGATION
+         ═══════════════════════════════════════ -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <a href="#home" class="logo" data-scroll>CHANDRAKANT</a>
+            <div class="nav-links" id="navLinks">
+                <a href="#work" data-scroll>Work</a>
+                <a href="#design" data-scroll>Design</a>
+                <a href="#about" data-scroll>About</a>
+                <a href="#contact" data-scroll>Contact</a>
             </div>
-            <div class="nav-status">AVAILABLE FOR PROJECTS</div>
+            <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
         </div>
     </nav>
 
-    <!-- ── HERO ── -->
-    <section class="hero" id="hero">
-        <div class="hero-bg">
-            <div class="hero-grain"></div>
-            <div class="hero-vignette"></div>
-            <canvas id="heroCanvas"></canvas>
+    <!-- Mobile Menu Overlay -->
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="#work" data-scroll class="mobile-menu-link">Work</a>
+        <a href="#design" data-scroll class="mobile-menu-link">Design</a>
+        <a href="#about" data-scroll class="mobile-menu-link">About</a>
+        <a href="#contact" data-scroll class="mobile-menu-link">Contact</a>
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         VIDEO MODAL
+         ═══════════════════════════════════════ -->
+    <div class="video-modal" id="videoModal">
+        <button class="close-modal" id="closeModal" aria-label="Close video">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+        </button>
+        <div class="modal-content" id="modalContent">
+            <iframe id="modalIframe" src="" frameborder="0" allow="autoplay; encrypted-media; fullscreen" allowfullscreen></iframe>
         </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         HERO SECTION
+         ═══════════════════════════════════════ -->
+    <section class="hero" id="home">
+        <!-- Floating 3D SVGs -->
+        <div class="hero-3d-elements">
+            <!-- Play icon floating -->
+            <div class="hero-svg-item" data-speed="1.2" style="top: 20%; left: 15%;">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="var(--accent)" opacity="0.6">
+                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                </svg>
+            </div>
+            <!-- Keyframe icon floating -->
+            <div class="hero-svg-item" data-speed="-0.8" style="top: 60%; right: 20%;">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--accent2)" stroke-width="2" opacity="0.6">
+                    <path d="M12 2L22 12L12 22L2 12L12 2Z"></path>
+                </svg>
+            </div>
+            <!-- Scissors icon floating -->
+            <div class="hero-svg-item" data-speed="0.5" style="bottom: 20%; left: 30%;">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--text)" stroke-width="2" opacity="0.4">
+                    <circle cx="6" cy="6" r="3"></circle>
+                    <circle cx="6" cy="18" r="3"></circle>
+                    <line x1="20" y1="4" x2="8.12" y2="15.88"></line>
+                    <line x1="14.47" y1="14.48" x2="20" y2="20"></line>
+                    <line x1="8.12" y1="8.12" x2="12" y2="12"></line>
+                </svg>
+            </div>
+            <!-- Clip icon floating -->
+            <div class="hero-svg-item" data-speed="-1.5" style="top: 30%; right: 10%;">
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--text-dim)" stroke-width="2" opacity="0.3">
+                    <rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect>
+                    <rect x="9" y="9" width="6" height="6"></rect>
+                    <line x1="9" y1="1" x2="9" y2="4"></line>
+                    <line x1="15" y1="1" x2="15" y2="4"></line>
+                    <line x1="9" y1="20" x2="9" y2="23"></line>
+                    <line x1="15" y1="20" x2="15" y2="23"></line>
+                    <line x1="20" y1="9" x2="23" y2="9"></line>
+                    <line x1="20" y1="14" x2="23" y2="14"></line>
+                    <line x1="1" y1="9" x2="4" y2="9"></line>
+                    <line x1="1" y1="14" x2="4" y2="14"></line>
+                </svg>
+            </div>
+        </div>
+        <!-- Overlays -->
+        <div class="hero-overlay-dark"></div>
+        <div class="hero-overlay-gradient"></div>
+        <div class="hero-overlay-noise"></div>
         
-        <div class="hero-content">
-            <div class="hero-meta reveal">VISUAL STORYTELLER / EDITOR</div>
-            <h1 class="hero-title">
-                <span class="line">THE ART OF</span>
-                <span class="line accent">RETENTION</span>
-            </h1>
-            <div class="hero-scroll">
-                <div class="scroll-line"></div>
-                <span>SCROLL TO EXPLORE</span>
+        <!-- Particle Canvas -->
+        <canvas id="heroParticles" class="hero-particles"></canvas>
+
+        <!-- Hero Content -->
+        <div class="hero-content" id="heroContent">
+            <h1 class="hero-title" id="heroTitle">CHANDRAKANT</h1>
+            <p class="hero-subtitle" id="heroSubtitle">Visual Storyteller & Video Editor</p>
+            <p class="hero-tagline" id="heroTagline">"I turn attention into retention."</p>
+            <div class="hero-glow"></div>
+        </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════
+         SHOWREEL / WORK SECTION (SPLIT VERTICAL)
+         ═══════════════════════════════════════ -->
+    <section class="showreel-split-wrapper" id="work">
+        <div class="section-container">
+            <div class="split-header text-center mb-5 reveal-el">
+                <h2 class="section-title-massive">SELECTED<br><span class="accent-text">WORK</span></h2>
+                <!-- Stylish Scroll Symbol V2 (Symbol Only) -->
+                <div class="scroll-indicator-v2">
+                    <div class="scroll-icon-symbol"></div>
+                </div>
+            </div>
+
+            <div class="showreel-grid-container">
+                <!-- CATEGORY: REELS -->
+                <div class="category-section mb-5">
+                    <h3 class="category-title reveal-el mb-4">01 // REELS & SHORTS</h3>
+                    <div class="showreel-grid">
+                        <div class="video-card cinematic-card tilt-card reveal-el" data-video-id="xXJj_Pt0aCk" data-type="short">
+                            <div class="card-thumb" data-thumb="xXJj_Pt0aCk"></div>
+                            <video class="card-hover-video" loop muted playsinline preload="none"></video>
+                            <div class="card-overlay-gradient"></div>
+                            <div class="card-info">
+                                <h4 class="card-title">01</h4>
+                            </div>
+                            <div class="card-glow"></div>
+                            <div class="play-btn-circle"><span class="play-icon">▶</span></div>
+                        </div>
+                        <div class="video-card cinematic-card tilt-card reveal-el" data-video-id="KDY6s0J2iuw" data-type="short">
+                            <div class="card-thumb" data-thumb="KDY6s0J2iuw"></div>
+                            <video class="card-hover-video" loop muted playsinline preload="none"></video>
+                            <div class="card-overlay-gradient"></div>
+                            <div class="card-info">
+                                <h4 class="card-title">02</h4>
+                            </div>
+                            <div class="card-glow"></div>
+                            <div class="play-btn-circle"><span class="play-icon">▶</span></div>
+                        </div>
+                        <div class="video-card cinematic-card tilt-card reveal-el" data-video-id="7pDmhPvvVpc" data-type="short">
+                            <div class="card-thumb" data-thumb="7pDmhPvvVpc"></div>
+                            <video class="card-hover-video" loop muted playsinline preload="none"></video>
+                            <div class="card-overlay-gradient"></div>
+                            <div class="card-info">
+                                <h4 class="card-title">03</h4>
+                            </div>
+                            <div class="card-glow"></div>
+                            <div class="play-btn-circle"><span class="play-icon">▶</span></div>
+                        </div>
+                        <div class="video-card cinematic-card tilt-card reveal-el" data-video-id="zAkT1JkhBlk" data-type="short">
+                            <div class="card-thumb" data-thumb="zAkT1JkhBlk"></div>
+                            <video class="card-hover-video" loop muted playsinline preload="none"></video>
+                            <div class="card-overlay-gradient"></div>
+                            <div class="card-info">
+                                <h4 class="card-title">04</h4>
+                            </div>
+                            <div class="card-glow"></div>
+                            <div class="play-btn-circle"><span class="play-icon">▶</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CATEGORY: INFORMATIVE -->
+                <div class="category-section mb-5">
+                    <h3 class="category-title reveal-el mb-4">02 // INFORMATIVE</h3>
+                    <div class="showreel-grid">
+                        <div class="video-card cinematic-card tilt-card reveal-el" data-video-id="KZRoIxruq0g" data-type="short">
+                            <div class="card-thumb" data-thumb="KZRoIxruq0g"></div>
+                            <video class="card-hover-video" loop muted playsinline preload="none"></video>
+                            <div class="card-overlay-gradient"></div>
+                            <div class="card-info">
+                                <h4 class="card-title">05</h4>
+                            </div>
+                            <div class="card-glow"></div>
+                            <div class="play-btn-circle"><span class="play-icon">▶</span></div>
+                        </div>
+                        <div class="video-card cinematic-card tilt-card reveal-el" data-video-id="EZyc5tIjFsk" data-type="short">
+                            <div class="card-thumb" data-thumb="EZyc5tIjFsk"></div>
+                            <video class="card-hover-video" loop muted playsinline preload="none"></video>
+                            <div class="card-overlay-gradient"></div>
+                            <div class="card-info">
+                                <h4 class="card-title">06</h4>
+                            </div>
+                            <div class="card-glow"></div>
+                            <div class="play-btn-circle"><span class="play-icon">▶</span></div>
+                        </div>
+                        <div class="video-card cinematic-card tilt-card reveal-el" data-video-id="z5_pnCKndys" data-type="short">
+                            <div class="card-thumb" data-thumb="z5_pnCKndys"></div>
+                            <video class="card-hover-video" loop muted playsinline preload="none"></video>
+                            <div class="card-overlay-gradient"></div>
+                            <div class="card-info">
+                                <h4 class="card-title">07</h4>
+                            </div>
+                            <div class="card-glow"></div>
+                            <div class="play-btn-circle"><span class="play-icon">▶</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CATEGORY: LONG FORM -->
+                <div class="category-section">
+                    <h3 class="category-title reveal-el mb-4">03 // LONG FORM</h3>
+                    <div class="showreel-grid">
+                        <div class="video-card cinematic-card tilt-card reveal-el" data-video-id="NsJvmcyyqKA" data-type="long">
+                            <div class="card-thumb" data-thumb="NsJvmcyyqKA"></div>
+                            <video class="card-hover-video" loop muted playsinline preload="none"></video>
+                            <div class="card-overlay-gradient"></div>
+                            <div class="card-info">
+                                <h4 class="card-title">08</h4>
+                            </div>
+                            <div class="card-glow"></div>
+                            <div class="play-btn-circle"><span class="play-icon">▶</span></div>
+                        </div>
+                        <div class="video-card cinematic-card tilt-card reveal-el" data-video-id="MWT3AyEMswg" data-type="long">
+                            <div class="card-thumb" data-thumb="MWT3AyEMswg"></div>
+                            <video class="card-hover-video" loop muted playsinline preload="none"></video>
+                            <div class="card-overlay-gradient"></div>
+                            <div class="card-info">
+                                <h4 class="card-title">09</h4>
+                            </div>
+                            <div class="card-glow"></div>
+                            <div class="play-btn-circle"><span class="play-icon">▶</span></div>
+                        </div>
+                        <div class="video-card cinematic-card tilt-card reveal-el" data-video-id="XsMM8D-tq7A" data-type="long">
+                            <div class="card-thumb" data-thumb="XsMM8D-tq7A"></div>
+                            <video class="card-hover-video" loop muted playsinline preload="none"></video>
+                            <div class="card-overlay-gradient"></div>
+                            <div class="card-info">
+                                <h4 class="card-title">10</h4>
+                            </div>
+                            <div class="card-glow"></div>
+                            <div class="play-btn-circle"><span class="play-icon">▶</span></div>
+                        </div>
+                        <div class="video-card cinematic-card tilt-card reveal-el" data-video-id="WV3aOcdL7ws" data-type="long">
+                            <div class="card-thumb" data-thumb="WV3aOcdL7ws"></div>
+                            <video class="card-hover-video" loop muted playsinline preload="none"></video>
+                            <div class="card-overlay-gradient"></div>
+                            <div class="card-info">
+                                <h4 class="card-title">11</h4>
+                            </div>
+                            <div class="card-glow"></div>
+                            <div class="play-btn-circle"><span class="play-icon">▶</span></div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- ── WORK SECTION ── -->
-    <section class="work" id="work">
-        <div class="work-header">
-            <h2 class="section-title">THE ARCHIVE.</h2>
-            <div class="work-filter">
-                <button class="filter-btn active" data-filter="all">ALL</button>
-                <button class="filter-btn" data-filter="reels">REELS</button>
-                <button class="filter-btn" data-filter="long">FEATURES</button>
-            </div>
-        </div>
+    <!-- ═══════════════════════════════════════
+         GRAPHIC DESIGN SECTION
+         ═══════════════════════════════════════ -->
+    <section class="graphic-design" id="design">
+        <!-- Grain texture overlay -->
+        <div class="gd-grain-overlay"></div>
+        <!-- Subtle ambient glow -->
+        <div class="gd-ambient-glow"></div>
 
-        <div class="work-grid">
-            <!-- REELS -->
-            <div class="work-item" data-category="reels" data-video="xXJj_Pt0aCk">
-                <div class="work-img-wrap">
-                    <img src="https://img.youtube.com/vi/xXJj_Pt0aCk/maxresdefault.jpg" alt="Work 01" loading="lazy">
-                    <div class="work-overlay">
-                        <span class="work-num">01</span>
-                        <span class="play-btn">PLAY</span>
-                    </div>
-                </div>
-            </div>
-            <div class="work-item" data-category="reels" data-video="KDY6s0J2iuw">
-                <div class="work-img-wrap">
-                    <img src="https://img.youtube.com/vi/KDY6s0J2iuw/maxresdefault.jpg" alt="Work 02" loading="lazy">
-                    <div class="work-overlay">
-                        <span class="work-num">02</span>
-                        <span class="play-btn">PLAY</span>
-                    </div>
-                </div>
-            </div>
-            <div class="work-item" data-category="reels" data-video="zAkT1JkhBlk">
-                <div class="work-img-wrap">
-                    <img src="https://img.youtube.com/vi/zAkT1JkhBlk/maxresdefault.jpg" alt="Work 03" loading="lazy">
-                    <div class="work-overlay">
-                        <span class="work-num">03</span>
-                        <span class="play-btn">PLAY</span>
-                    </div>
-                </div>
+        <div class="section-container">
+            <!-- Section Header — Minimal Editorial -->
+            <div class="gd-header gd-reveal">
+                <div class="gd-header-rule"></div>
+                <span class="gd-header-label">Portfolio</span>
+                <h2 class="gd-title">Graphic<br><em>Design</em></h2>
+                <p class="gd-subtitle">Logos · Posters · Branding</p>
+                <div class="gd-header-rule"></div>
             </div>
 
-            <!-- LONG FORM -->
-            <div class="work-item wide" data-category="long" data-video="NsJvmcyyqKA">
-                <div class="work-img-wrap">
-                    <img src="https://img.youtube.com/vi/NsJvmcyyqKA/maxresdefault.jpg" alt="Work 04" loading="lazy">
-                    <div class="work-overlay">
-                        <span class="work-num">04</span>
-                        <span class="play-btn">PLAY</span>
+            <!-- ── CATEGORY 1: LOGO DESIGN ── -->
+            <div class="gd-category gd-reveal" id="gdLogos">
+                <div class="gd-category-label">
+                    <span class="gd-cat-number">01</span>
+                    <span class="gd-cat-name">Logo Design</span>
+                </div>
+                <div class="gd-grid gd-grid-logos">
+                    <div class="gd-card gd-card-logo" data-fullimg="https://lh3.googleusercontent.com/d/1dMGgt5xng3YlH4gkOM3YnbauAlTq5F_F">
+                        <div class="gd-card-inner">
+                            <div class="gd-card-bg gd-card-bg-dark"></div>
+                            <img src="https://lh3.googleusercontent.com/d/1dMGgt5xng3YlH4gkOM3YnbauAlTq5F_F" alt="Logo Design 1" class="gd-logo-img" loading="lazy">
+                            <div class="gd-card-glow-ring"></div>
+                        </div>
+                    </div>
+                    <div class="gd-card gd-card-logo" data-fullimg="https://lh3.googleusercontent.com/d/1kcQQVumkShb2IvT2mw6J08r2JR2PZfKf">
+                        <div class="gd-card-inner">
+                            <div class="gd-card-bg gd-card-bg-light"></div>
+                            <img src="https://lh3.googleusercontent.com/d/1kcQQVumkShb2IvT2mw6J08r2JR2PZfKf" alt="Logo Design 2" class="gd-logo-img" loading="lazy">
+                            <div class="gd-card-glow-ring"></div>
+                        </div>
+                    </div>
+                    <div class="gd-card gd-card-logo" data-fullimg="https://lh3.googleusercontent.com/d/1W5do7AssfrKKGqMHaXaTJa4MIIb_NgvN">
+                        <div class="gd-card-inner">
+                            <div class="gd-card-bg gd-card-bg-dark"></div>
+                            <img src="https://lh3.googleusercontent.com/d/1W5do7AssfrKKGqMHaXaTJa4MIIb_NgvN" alt="Logo Design 3" class="gd-logo-img" loading="lazy">
+                            <div class="gd-card-glow-ring"></div>
+                        </div>
                     </div>
                 </div>
-                <div class="work-desc">FEATURED PROJECT / LONG FORM</div>
+            </div>
+
+            <!-- ── CATEGORY 2: POSTERS ── -->
+            <div class="gd-category gd-reveal" id="gdPosters">
+                <div class="gd-category-label">
+                    <span class="gd-cat-number">02</span>
+                    <span class="gd-cat-name">Posters</span>
+                </div>
+                <div class="gd-grid gd-grid-posters">
+                    <div class="gd-card gd-card-poster" data-fullimg="https://lh3.googleusercontent.com/d/1SMkDU4JsA413ELElrn-lpv3huUzfUOYZ">
+                        <div class="gd-card-inner">
+                            <img src="https://lh3.googleusercontent.com/d/1SMkDU4JsA413ELElrn-lpv3huUzfUOYZ" alt="Poster Design 1" class="gd-poster-img" loading="lazy">
+                            <div class="gd-poster-shine"></div>
+                        </div>
+                    </div>
+                    <div class="gd-card gd-card-poster" data-fullimg="https://lh3.googleusercontent.com/d/12Cu8k-cecaaDVxQfgqBVLpsc3fAxbpJI">
+                        <div class="gd-card-inner">
+                            <img src="https://lh3.googleusercontent.com/d/12Cu8k-cecaaDVxQfgqBVLpsc3fAxbpJI" alt="Poster Design 2" class="gd-poster-img" loading="lazy">
+                            <div class="gd-poster-shine"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── CATEGORY 3: VISITING CARDS ── -->
+            <div class="gd-category gd-reveal" id="gdCards">
+                <div class="gd-category-label">
+                    <span class="gd-cat-number">03</span>
+                    <span class="gd-cat-name">Visiting Cards</span>
+                </div>
+                <div class="gd-grid gd-grid-vcards">
+                    <div class="gd-card gd-card-vcard" data-fullimg="https://lh3.googleusercontent.com/d/17swUSCSA36MDP8j-QOoPox6Jig1LRsXD">
+                        <div class="gd-card-inner gd-vcard-3d">
+                            <img src="https://lh3.googleusercontent.com/d/17swUSCSA36MDP8j-QOoPox6Jig1LRsXD" alt="Visiting Card - Front" class="gd-vcard-img" loading="lazy">
+                            <div class="gd-vcard-reflection"></div>
+                        </div>
+                        <span class="gd-vcard-label">Front</span>
+                    </div>
+                    <div class="gd-card gd-card-vcard" data-fullimg="https://lh3.googleusercontent.com/d/1TtezcIdl8slExalCifKWcS9UnQ7iHq--">
+                        <div class="gd-card-inner gd-vcard-3d">
+                            <img src="https://lh3.googleusercontent.com/d/1TtezcIdl8slExalCifKWcS9UnQ7iHq--" alt="Visiting Card - Back" class="gd-vcard-img" loading="lazy">
+                            <div class="gd-vcard-reflection"></div>
+                        </div>
+                        <span class="gd-vcard-label">Back</span>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- ── PHILOSOPHY ── -->
+    <!-- ═══════════════════════════════════════
+         IMAGE LIGHTBOX MODAL
+         ═══════════════════════════════════════ -->
+    <div class="img-lightbox" id="imgLightbox">
+        <button class="img-lightbox-close" id="imgLightboxClose" aria-label="Close image">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+        </button>
+        <img id="imgLightboxImg" src="" alt="Full resolution preview">
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         EXPERIENCE SECTION
+         ═══════════════════════════════════════ -->
+    <section class="experience" id="experience">
+        <div class="section-container">
+            <h2 class="section-title reveal-el">Experience</h2>
+            <div class="timeline">
+                <div class="timeline-track">
+                    <div class="timeline-glow-line" id="timelineGlow"></div>
+                </div>
+
+                <div class="timeline-item reveal-el" data-side="left">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-card">
+                        <span class="timeline-role">Freelance Editor</span>
+                        <h3 class="timeline-company">Pai Creation</h3>
+                        <p class="timeline-desc">End-to-end video editing for social media content and brand storytelling.</p>
+                    </div>
+                </div>
+
+                <div class="timeline-item reveal-el" data-side="right">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-card">
+                        <span class="timeline-role">Project</span>
+                        <h3 class="timeline-company">Dakshina Kannada Police</h3>
+                        <p class="timeline-desc">Produced awareness and outreach video content for the department.</p>
+                    </div>
+                </div>
+
+                <div class="timeline-item reveal-el" data-side="left">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-card">
+                        <span class="timeline-role">Collaborator</span>
+                        <h3 class="timeline-company">Dreams Unlimited</h3>
+                        <p class="timeline-desc">Collaborative video production and creative direction.</p>
+                    </div>
+                </div>
+
+                <div class="timeline-item reveal-el" data-side="right">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-card">
+                        <span class="timeline-role">Project</span>
+                        <h3 class="timeline-company">Gen-Z Jagruk</h3>
+                        <p class="timeline-desc">Youth awareness campaign content — high-energy, retention-driven edits.</p>
+                    </div>
+                </div>
+
+                <div class="timeline-item reveal-el" data-side="left">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-card">
+                        <span class="timeline-role">Intern</span>
+                        <h3 class="timeline-company">Neotic Minds</h3>
+                        <p class="timeline-desc">Kickstarted the professional journey — learned production workflows.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════
+         ABOUT SECTION
+         ═══════════════════════════════════════ -->
     <section class="about" id="about">
-        <div class="about-inner">
-            <div class="about-text">
-                <h3 class="about-label">OUR PHILOSOPHY</h3>
-                <p class="about-p">"I turn attention into retention. In a world of infinite scrolling, I create moments that make people <span class="italic">stop.</span>"</p>
-                <div class="about-stats">
-                    <div class="stat">
-                        <span class="stat-n">150+</span>
-                        <span class="stat-l">PROJECTS HANDLED</span>
+        <div class="section-container">
+            <div class="about-grid">
+                <div class="about-text">
+                    <h2 class="section-title reveal-el">The Philosophy</h2>
+                    <p class="about-p reveal-el">I create high-retention videos that keep audiences engaged <span class="accent-text">till the last second.</span></p>
+                    <div class="about-stats reveal-el">
+                        <div class="stat">
+                            <span class="stat-number" data-count="150">0</span>+
+                            <span class="stat-label">Projects Handled</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number" data-count="3">0</span>+
+                            <span class="stat-label">Years Experience</span>
+                        </div>
                     </div>
-                    <div class="stat">
-                        <span class="stat-n">03+</span>
-                        <span class="stat-l">YEARS EXP.</span>
+                </div>
+                <div class="about-visual reveal-el">
+                    <div class="visual-orb">
+                        <canvas id="aboutCanvas"></canvas>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- ── FOOTER ── -->
-    <footer class="footer" id="contact">
-        <div class="footer-top">
-            <h2 class="footer-title">LET'S DIRECT<br><span class="accent">YOUR VISION.</span></h2>
-            <a href="https://wa.me/917019505592" class="footer-cta" target="_blank">START A PROJECT</a>
+    <!-- ═══════════════════════════════════════
+         CONTACT SECTION
+         ═══════════════════════════════════════ -->
+    <section class="contact" id="contact">
+        <div class="contact-glow-bg"></div>
+        <div class="section-container contact-inner">
+            <h2 class="contact-headline reveal-el">Let's build something<br>people <span class="accent-text">don't skip.</span></h2>
+            <div class="contact-actions reveal-el">
+                <a href="https://wa.me/qr/SDHN2O3YSDKAB1" class="cta-btn" id="ctaBtn" target="_blank">
+                    <span class="cta-text">Work With Me</span>
+                    <span class="cta-shine"></span>
+                </a>
+            </div>
+            <div class="contact-links reveal-el">
+                <a href="mailto:cbarasakale@gmail.com" class="contact-link">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                    Email: cbarasakale@gmail.com
+                </a>
+                <a href="https://wa.me/917019505592" target="_blank" rel="noopener" class="contact-link">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.625.846 5.059 2.284 7.034L.789 23.492a.5.5 0 00.612.637l4.632-1.22A11.94 11.94 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-2.143 0-4.144-.663-5.804-1.793l-.417-.27-2.894.763.778-2.84-.296-.47A9.935 9.935 0 012 12C2 6.486 6.486 2 12 2s10 4.486 10 10-4.486 10-10 10z"/></svg>
+                    WhatsApp: +91 7019505592
+                </a>
+            </div>
         </div>
-        <div class="footer-bottom">
-            <div class="footer-copy">© 2026 CHANDRAKANT. ALL RIGHTS RESERVED.</div>
-            <div class="footer-credits">CRAFTED BY <span class="accent">ANTI</span></div>
-        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2026 Chandrakant. All rights reserved.</p>
     </footer>
 
-    <!-- ── MODAL ── -->
-    <div class="modal" id="videoModal">
-        <div class="modal-bg"></div>
-        <div class="modal-content">
-            <button class="modal-close">CLOSE</button>
-            <div class="video-container">
-                <iframe id="videoIframe" src="" frameborder="0" allow="autoplay; encrypted-media; fullscreen" allowfullscreen></iframe>
-            </div>
-        </div>
+    <!-- Minimalist Tracker -->
+    <div class="custom-cursor" id="cursor">
+        <div class="cursor-dot"></div>
+        <div class="cursor-ring"></div>
     </div>
 
     <script src="main.js"></script>

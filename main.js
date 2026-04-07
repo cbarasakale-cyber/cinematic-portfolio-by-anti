@@ -1,235 +1,1251 @@
-// ── LENIS SMOOTH SCROLL ──
-const lenis = new Lenis();
-lenis.on('scroll', ScrollTrigger.update);
-gsap.ticker.add((time) => {
-    lenis.raf(time * 1000);
-});
-gsap.ticker.lagSmoothing(0);
+/* ═══════════════════════════════════════════════════════════
+   CHANDRAKANT — CINEMATIC PORTFOLIO — main.js
+   All interactions, animations, and particle systems
+   ═══════════════════════════════════════════════════════════ */
 
-// ── LOADER ──
-const loader = document.getElementById('loader');
-const progressEl = document.querySelector('.loader-progress');
-const loaderLine = document.querySelector('.loader-line');
-const words = document.querySelectorAll('.word');
+(function () {
+    "use strict";
 
-let progress = 0;
-const interval = setInterval(() => {
-    progress += Math.floor(Math.random() * 10) + 1;
-    if (progress >= 100) {
-        progress = 100;
-        clearInterval(interval);
-        startIntro();
+    // Wait for all scripts to load
+    window.addEventListener("load", init);
+
+    let lenis = null;
+
+    function init() {
+        initIntro();
+        initCustomCursor();
+        initThumbnails();
     }
-    progressEl.innerText = progress.toString().padStart(2, '0');
-    loaderLine.style.width = progress + '%';
-}, 100);
 
-function startIntro() {
-    const tl = gsap.timeline();
-    tl.to(words, {
-        y: 0,
-        stagger: 0.1,
-        duration: 1,
-        ease: "power4.out"
-    })
-    .to(loader, {
-        y: "-100%",
-        duration: 1.5,
-        ease: "power4.inOut",
-        delay: 0.5
-    }, "+=0.5")
-    .from(".hero-title .line", {
-        y: 100,
-        opacity: 0,
-        stagger: 0.2,
-        duration: 1.5,
-        ease: "power4.out"
-    }, "-=0.5")
-    .from(".hero-meta", {
-        opacity: 0,
-        y: 20,
-        duration: 1,
-        ease: "power3.out"
-    }, "-=1");
-}
+    /* ═══════════════════════════════════════
+       1. CINEMATIC INTRO — Design Cover Style
+       ═══════════════════════════════════════ */
+    function initIntro() {
+        const loader = document.getElementById("introLoader");
+        const title = document.getElementById("introTitle");
+        const chars = title.querySelectorAll(".char");
+        const glowChar = document.getElementById("introGlowChar");
+        const signaturePath = document.getElementById("signaturePath");
+        const signatureText = document.querySelector(".signature-text-plain");
+        const selectionBox = document.getElementById("introSelection");
+        const selLines = selectionBox.querySelectorAll(".sel-line");
+        const selCorners = selectionBox.querySelectorAll(".sel-corner");
+        const metaText = document.querySelector(".intro-top-meta");
+        const progressBar = document.getElementById("introProgressBar");
+        const progressWrap = document.querySelector(".intro-progress-wrap");
 
-// ── HERO CANVAS (CINEMATIC DUST) ──
-const canvas = document.getElementById('heroCanvas');
-const ctx = canvas.getContext('2d');
-let particles = [];
+        if (!loader) { bootSite(); return; }
 
-function resize() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-}
-
-class Particle {
-    constructor() {
-        this.init();
-    }
-    init() {
-        this.x = Math.random() * canvas.width;
-        this.y = Math.random() * canvas.height;
-        this.size = Math.random() * 2;
-        this.speedX = (Math.random() - 0.5) * 0.5;
-        this.speedY = (Math.random() - 0.5) * 0.5;
-        this.alpha = Math.random() * 0.5;
-    }
-    update() {
-        this.x += this.speedX;
-        this.y += this.speedY;
-        if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
-        if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
-    }
-    draw() {
-        ctx.fillStyle = `rgba(197, 165, 114, ${this.alpha})`;
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fill();
-    }
-}
-
-function initParticles() {
-    particles = [];
-    for (let i = 0; i < 100; i++) {
-        particles.push(new Particle());
-    }
-}
-
-function animateParticles() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    particles.forEach(p => {
-        p.update();
-        p.draw();
-    });
-    requestAnimationFrame(animateParticles);
-}
-
-window.addEventListener('resize', resize);
-resize();
-initParticles();
-animateParticles();
-
-// ── SCROLL ANIMATIONS ──
-gsap.registerPlugin(ScrollTrigger);
-
-// Work horizontal parallax or simple reveal
-const workItems = document.querySelectorAll('.work-item');
-workItems.forEach(item => {
-    gsap.from(item, {
-        scrollTrigger: {
-            trigger: item,
-            start: "top bottom-=100px",
-            toggleActions: "play none none reverse"
-        },
-        y: 100,
-        opacity: 0,
-        duration: 1.2,
-        ease: "power3.out"
-    });
-});
-
-// About section reveal
-gsap.from(".about-p", {
-    scrollTrigger: {
-        trigger: ".about",
-        start: "top center",
-    },
-    y: 50,
-    opacity: 0,
-    duration: 1.5,
-    ease: "power4.out"
-});
-
-// ── FILTER LOGIC ──
-const filterBtns = document.querySelectorAll('.filter-btn');
-filterBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-        const filter = btn.dataset.filter;
-        
-        // Update buttons
-        filterBtns.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-
-        // Filter items
-        workItems.forEach(item => {
-            if (filter === 'all' || item.dataset.category === filter) {
-                gsap.to(item, { opacity: 1, scale: 1, display: "block", duration: 0.5 });
-            } else {
-                gsap.to(item, { opacity: 0, scale: 0.9, display: "none", duration: 0.5 });
+        // ── Create GSAP Timeline ──
+        const tl = gsap.timeline({
+            onComplete: () => {
+                loader.classList.add("fade-out");
+                setTimeout(() => {
+                    loader.style.display = "none";
+                    bootSite();
+                    if (typeof refreshScroll === "function") refreshScroll();
+                }, 1200);
             }
         });
-        
-        // Refresh ScrollTrigger
-        setTimeout(() => ScrollTrigger.refresh(), 600);
-    });
-});
 
-// ── MODAL LOGIC ──
-const modal = document.getElementById('videoModal');
-const iframe = document.getElementById('videoIframe');
-const closeBtn = document.querySelector('.modal-close');
-const modalBg = document.querySelector('.modal-bg');
-
-workItems.forEach(item => {
-    item.addEventListener('click', () => {
-        const videoId = item.dataset.video;
-        const type = item.dataset.category === 'reels' ? 'short' : 'video';
+        // ── Stage 1: Initial Atmosphere (0s) ──
+        tl.set([title, selectionBox, progressWrap], { opacity: 1 });
         
-        // Handle YouTube shorts vs normal videos
-        let url = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
-        if (type === 'short') {
-            // Note: YouTube shorts can be embedded using the same embed link, 
-            // but sometimes they need specific parameters or a different player size.
-            // For this cinematic look, we'll keep the 16:9 container for all, or 
-            // update if needed.
+        // ── Stage 2: Main Text Reveal (0.5s) ──
+        tl.to(metaText, { opacity: 1, y: 0, duration: 1, ease: "power2.out" }, 0.2);
+        
+        tl.to(chars, {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            duration: 1.2,
+            stagger: 0.05,
+            ease: "expo.out"
+        }, 0.5);
+
+        // ── Stage 3: Light Source Activation (1.5s) ──
+        tl.to(glowChar, {
+            className: "char light-source",
+            duration: 0.1,
+            onStart: () => {
+                // Subtle flicker effect using GSAP
+                gsap.to(glowChar, {
+                    opacity: 0.7,
+                    repeat: 5,
+                    yoyo: true,
+                    duration: 0.05,
+                    ease: "rough({ template: none.out, strength: 2, points: 20, taper: 'none', randomize: true, clamp: true})",
+                    onComplete: () => gsap.set(glowChar, { opacity: 1 })
+                });
+            }
+        }, 1.5);
+
+        // ── Stage 4: Signature Handwriting (2.0s) ──
+        tl.to(signaturePath, {
+            strokeDashoffset: 0,
+            duration: 1.5,
+            ease: "power2.inOut"
+        }, 2.0);
+
+        tl.to(signatureText, {
+            opacity: 1,
+            duration: 0.8
+        }, 2.8);
+
+        // EXTRA: Fade out the writing path to "reveal" the clean text without overlay
+        tl.to(signaturePath, {
+            opacity: 0,
+            duration: 0.4
+        }, 3.5);
+
+        // ── Stage 5: Selection Box Draw & Tool Icons (2.5s) ──
+        tl.to(selectionBox, { opacity: 1, duration: 0.1 }, 2.5);
+        
+        // Horizontal lines
+        tl.to([selLines[2], selLines[3]], { width: "100%", duration: 0.8, ease: "power2.inOut" }, 2.6);
+        // Vertical lines
+        tl.to([selLines[0], selLines[1]], { height: "100%", duration: 0.8, ease: "power2.inOut" }, 2.8);
+        
+        // Tool Icons Pop-in
+        tl.to(".intro-tool-icon", {
+            scale: 1,
+            opacity: 1,
+            duration: 0.5,
+            stagger: 0.12,
+            ease: "back.out(2.5)"
+        }, 3.0);
+
+        // Corner handles
+        tl.to(selCorners, {
+            scale: 1,
+            opacity: 1,
+            duration: 0.4,
+            stagger: 0.1,
+            ease: "back.out(2)"
+        }, 3.2);
+
+        // ── Stage 6: Progress & Zoom (0-4.5s) ──
+        tl.to(progressWrap, { opacity: 1, duration: 0.5 }, 0.5);
+        tl.to(progressBar, { width: "100%", duration: 4.5, ease: "none" }, 0);
+
+        // Cinematic subtle scale-up
+        tl.to(".intro-content", {
+            scale: 1.05,
+            duration: 5,
+            ease: "none"
+        }, 0);
+    }
+
+
+    /* ═══════════════════════════════════════
+       2. BOOT SITE — after intro fades
+       ═══════════════════════════════════════ */
+    function bootSite() {
+        initLenis();
+        initNavbar();
+        initMobileMenu();
+        initHeroAnimations();
+        initHeroParticles();
+        initShowreelAnimations(); 
+        initThumbnails(); 
+        initScrollAnimations();
+        init3DTilt();
+        initHoverPreviews();
+        initVideoModal();
+        initTimelineGlow();
+        initAboutCanvas();
+        initGraphicDesign();
+        initCountUp();
+        initCustomCursor();
+        initDustTransition();
+
+        
+        // Final refresh sequence
+        setTimeout(() => ScrollTrigger.refresh(), 500);
+        setTimeout(() => ScrollTrigger.refresh(), 1500);
+        
+        // Safety Net: Force reveal after 2.5s if animations didn't trigger
+        setTimeout(() => {
+            document.querySelectorAll(".reveal-el").forEach(el => {
+                el.classList.add("is-revealed");
+            });
+        }, 2500);
+    }
+
+    /* ═══════════════════════════════════════
+       3. LENIS SMOOTH SCROLL
+       ═══════════════════════════════════════ */
+    function initLenis() {
+        lenis = new Lenis({
+            duration: 1.2,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            direction: "vertical",
+            smooth: true,
+            smoothTouch: false,
+            touchMultiplier: 2,
+        });
+
+        gsap.registerPlugin(ScrollTrigger);
+        lenis.on("scroll", ScrollTrigger.update);
+
+        gsap.ticker.add((time) => {
+            lenis.raf(time * 1000);
+        });
+        gsap.ticker.lagSmoothing(0);
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll("[data-scroll]").forEach((link) => {
+            link.addEventListener("click", (e) => {
+                e.preventDefault();
+                const target = document.querySelector(link.getAttribute("href"));
+                if (target) {
+                    lenis.scrollTo(target, { offset: -40, duration: 1.5 });
+                }
+                // Close mobile menu if open
+                closeMobileMenu();
+            });
+        });
+    }
+
+    /* ═══════════════════════════════════════
+       4. NAVBAR
+       ═══════════════════════════════════════ */
+    function initNavbar() {
+        const navbar = document.getElementById("navbar");
+
+        // Show navbar after intro
+        setTimeout(() => {
+            navbar.classList.add("visible");
+        }, 200);
+
+        // Scroll detection
+        window.addEventListener("scroll", () => {
+            if (window.scrollY > 60) {
+                navbar.classList.add("scrolled");
+            } else {
+                navbar.classList.remove("scrolled");
+            }
+        });
+    }
+
+    /* ═══════════════════════════════════════
+       5. MOBILE MENU
+       ═══════════════════════════════════════ */
+    let mobileMenuOpen = false;
+
+    function initMobileMenu() {
+        const toggle = document.getElementById("mobileToggle");
+        const menu = document.getElementById("mobileMenu");
+
+        toggle.addEventListener("click", () => {
+            mobileMenuOpen = !mobileMenuOpen;
+            toggle.classList.toggle("active", mobileMenuOpen);
+            menu.classList.toggle("active", mobileMenuOpen);
+
+            if (mobileMenuOpen && lenis) {
+                lenis.stop();
+            } else if (lenis) {
+                lenis.start();
+            }
+        });
+
+        // Close on link click
+        menu.querySelectorAll("[data-scroll]").forEach((link) => {
+            link.addEventListener("click", () => {
+                closeMobileMenu();
+            });
+        });
+    }
+
+    function closeMobileMenu() {
+        const toggle = document.getElementById("mobileToggle");
+        const menu = document.getElementById("mobileMenu");
+        mobileMenuOpen = false;
+        if (toggle) toggle.classList.remove("active");
+        if (menu) menu.classList.remove("active");
+        if (lenis) lenis.start();
+    }
+
+    /* ═══════════════════════════════════════
+       6. HERO ANIMATIONS (GSAP)
+       ═══════════════════════════════════════ */
+    function initHeroAnimations() {
+        const tl = gsap.timeline({ delay: 0.2 });
+
+        // Stagger hero text
+        tl.fromTo(".hero-title",
+            { opacity: 0, y: 60, scale: 1.1 },
+            { opacity: 1, y: 0, scale: 1, duration: 1.2, ease: "power3.out" },
+            0.5
+        );
+        tl.fromTo(".hero-subtitle",
+            { opacity: 0, y: 30 },
+            { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" },
+            "-=0.6"
+        );
+        tl.fromTo(".hero-tagline",
+            { opacity: 0, y: 20 },
+            { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" },
+            "-=0.4"
+        );
+        tl.fromTo(".scroll-indicator",
+            { opacity: 0 },
+            { opacity: 1, duration: 1 },
+            "-=0.3"
+        );
+
+        // Parallax on mouse move
+        const heroContent = document.getElementById("heroContent");
+        const hero = document.querySelector(".hero");
+        const floatingSvgs = document.querySelectorAll(".hero-svg-item");
+
+        hero.addEventListener("mousemove", (e) => {
+            const xShift = (e.clientX / window.innerWidth - 0.5) * 30;
+            const yShift = (e.clientY / window.innerHeight - 0.5) * 20;
+
+            gsap.to(heroContent, {
+                x: xShift,
+                y: yShift,
+                duration: 1,
+                ease: "power2.out",
+            });
+
+            gsap.to(".hero-glow", {
+                x: xShift * 1.5,
+                y: yShift * 1.5,
+                duration: 1.2,
+                ease: "power2.out",
+            });
+
+            // Float SVGs independently
+            floatingSvgs.forEach((svg) => {
+                const speed = parseFloat(svg.getAttribute("data-speed") || "1");
+                gsap.to(svg, {
+                    x: xShift * speed * 2,
+                    y: yShift * speed * 2,
+                    duration: 1.5,
+                    ease: "power2.out"
+                });
+            });
+        });
+
+        hero.addEventListener("mouseleave", () => {
+            gsap.to(heroContent, { x: 0, y: 0, duration: 1, ease: "power2.out" });
+            gsap.to(".hero-glow", { x: 0, y: 0, duration: 1.2, ease: "power2.out" });
+            
+            floatingSvgs.forEach((svg) => {
+                gsap.to(svg, { x: 0, y: 0, duration: 1.5, ease: "power2.out" });
+            });
+        });
+    }
+
+    /* ═══════════════════════════════════════
+       7. HERO PARTICLES (Canvas)
+       ═══════════════════════════════════════ */
+    function initHeroParticles() {
+        const canvas = document.getElementById("heroParticles");
+        if (!canvas) return;
+
+        const ctx = canvas.getContext("2d");
+        let w, h;
+        const particles = [];
+        const PARTICLE_COUNT = 80;
+        let mouse = { x: -1000, y: -1000 };
+
+        function resize() {
+            w = canvas.width = canvas.offsetWidth;
+            h = canvas.height = canvas.offsetHeight;
         }
+        resize();
+        window.addEventListener("resize", resize);
+
+        // Track mouse position within hero
+        const hero = document.querySelector(".hero");
+        hero.addEventListener("mousemove", (e) => {
+            const rect = canvas.getBoundingClientRect();
+            mouse.x = e.clientX - rect.left;
+            mouse.y = e.clientY - rect.top;
+
+            // Subtle Parallax Canvas Shift
+            const centerX = window.innerWidth / 2;
+            const centerY = window.innerHeight / 2;
+            const moveX = (e.clientX - centerX) * 0.015; // Max ~15px
+            const moveY = (e.clientY - centerY) * 0.015;
+
+            gsap.to(canvas, {
+                x: moveX,
+                y: moveY,
+                duration: 1.2,
+                ease: "power2.out"
+            });
+        });
+        hero.addEventListener("mouseleave", () => {
+            mouse.x = -1000;
+            mouse.y = -1000;
+            gsap.to(canvas, { x: 0, y: 0, duration: 1.5, ease: "power2.out" });
+        });
+
+        // Create particles
+        for (let i = 0; i < PARTICLE_COUNT; i++) {
+            particles.push({
+                x: Math.random() * w,
+                y: Math.random() * h,
+                r: Math.random() * 2.5 + 0.5,
+                vx: (Math.random() - 0.5) * 0.4,
+                vy: (Math.random() - 0.5) * 0.4,
+                alpha: Math.random() * 0.4 + 0.1,
+                color: Math.random() > 0.5
+                    ? `108, 99, 255`   // accent blue
+                    : `191, 90, 242`,  // accent purple
+            });
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, w, h);
+
+            particles.forEach((p) => {
+                // Subtle mouse repulsion (Dodge)
+                const dx = p.x - mouse.x;
+                const dy = p.y - mouse.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                
+                if (dist < 150) {
+                    const force = (150 - dist) / 150;
+                    const strength = 0.45; // Subtle but noticeable
+                    p.vx += (dx / dist) * force * strength;
+                    p.vy += (dy / dist) * force * strength;
+                    
+                    // "Grab" Effect - Draw connecting line to mouse
+                    if (dist < 100) {
+                        ctx.beginPath();
+                        ctx.moveTo(p.x, p.y);
+                        ctx.lineTo(mouse.x, mouse.y);
+                        ctx.strokeStyle = `rgba(108, 99, 255, ${0.15 * (1 - dist/100)})`;
+                        ctx.lineWidth = 0.3;
+                        ctx.stroke();
+                    }
+                }
+
+                // Smooth slow down (Premium Friction)
+                p.vx *= 0.96; 
+                p.vy *= 0.96;
+
+                p.x += p.vx + (Math.random() - 0.5) * 0.15; // Natural jitter
+                p.y += p.vy + (Math.random() - 0.5) * 0.15;
+
+                // Wrap around edges with buffer
+                const buffer = 20;
+                if (p.x < -buffer) p.x = w + buffer;
+                if (p.x > w + buffer) p.x = -buffer;
+                if (p.y < -buffer) p.y = h + buffer;
+                if (p.y > h + buffer) p.y = -buffer;
+
+                // Draw Particle
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(${p.color}, ${p.alpha})`;
+                ctx.fill();
+            });
+
+            // Draw connections between particles
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < 110) {
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        const alpha = (1 - dist / 110) * 0.1;
+                        ctx.strokeStyle = `rgba(108, 99, 255, ${alpha})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.stroke();
+                    }
+                }
+            }
+
+            requestAnimationFrame(draw);
+        }
+        draw();
+    }
+
+    /* ═══════════════════════════════════════
+       8. LOAD THUMBNAILS (lazy)
+       ═══════════════════════════════════════ */
+    function initThumbnails() {
+        document.querySelectorAll(".card-thumb[data-thumb]").forEach((el) => {
+            const id = el.getAttribute("data-thumb");
+            
+            // Set fallback first to ensure no black boxes
+            el.style.backgroundImage = `url('https://img.youtube.com/vi/${id}/hqdefault.jpg')`;
+            
+            // Try high res upgrade
+            const img = new Image();
+            img.onload = () => {
+                // Only upgrade if hqdefault worked or we have a valid img
+                if (img.width > 120) {
+                   el.style.backgroundImage = `url('${img.src}')`;
+                }
+            };
+            img.src = `https://img.youtube.com/vi/${id}/maxresdefault.jpg`;
+        });
+    }
+
+    /* ═══════════════════════════════════════
+       9. SCROLL ANIMATIONS (GSAP ScrollTrigger)
+       ═══════════════════════════════════════ */
+    function initScrollAnimations() {
+        // 1. 3D Experience Timeline Animation
+        gsap.utils.toArray(".timeline-item").forEach((item, i) => {
+            const side = item.getAttribute("data-side");
+            const entryX = side === "left" ? -100 : 100;
+
+            gsap.from(item, {
+                opacity: 0,
+                x: entryX,
+                z: -500,
+                rotationX: 45,
+                rotationY: side === "left" ? 15 : -15,
+                duration: 1.5,
+                ease: "expo.out",
+                scrollTrigger: {
+                    trigger: item,
+                    start: "top 85%",
+                    toggleActions: "play none none reverse",
+                }
+            });
+        });
+
+        // 2. About and Contact reveals
+        gsap.utils.toArray("#about .reveal-el, #contact .reveal-el").forEach((el, i) => {
+            gsap.from(el, {
+                opacity: 0,
+                y: 50,
+                duration: 1,
+                ease: "power3.out",
+                scrollTrigger: {
+                    trigger: el,
+                    start: "top 90%",
+                }
+            });
+        });
+
+        // 3. Parallax hero fade out on scroll
+        gsap.to(".hero-content", {
+            y: -100,
+            opacity: 0,
+            ease: "none",
+            scrollTrigger: {
+                trigger: ".hero",
+                start: "top top",
+                end: "bottom top",
+                scrub: 1,
+            },
+        });
+    }
+
+    /* ═══════════════════════════════════════
+       9b. SPLIT SHOWREEL PARALLAX
+       ═══════════════════════════════════════ */
+    function initShowreelAnimations() {
+        // Unified grid reveal and subtle paralax for each category
+        gsap.utils.toArray(".category-section").forEach((section) => {
+            gsap.from(section.querySelectorAll(".video-card"), {
+                opacity: 0,
+                y: 50,
+                scale: 0.95,
+                duration: 1,
+                stagger: 0.15,
+                ease: "power3.out",
+                scrollTrigger: {
+                    trigger: section,
+                    start: "top 85%",
+                }
+            });
+        });
+    }
+
+    /* ═══════════════════════════════════════
+       9c. 3D TILT EFFECT
+       ═══════════════════════════════════════ */
+    function init3DTilt() {
+        const cards = document.querySelectorAll(".tilt-card");
+
+        cards.forEach(card => {
+            card.addEventListener("mousemove", (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                
+                const rotateX = ((y - centerY) / centerY) * -8; // max 8 deg
+                const rotateY = ((x - centerX) / centerX) * 8;
+                
+                gsap.to(card, {
+                    rotateX: rotateX,
+                    rotateY: rotateY,
+                    transformPerspective: 1000,
+                    ease: "power1.out",
+                    duration: 0.4
+                });
+            });
+
+            card.addEventListener("mouseleave", () => {
+                gsap.to(card, {
+                    rotateX: 0,
+                    rotateY: 0,
+                    ease: "power2.out",
+                    duration: 0.8
+                });
+            });
+        });
+    }
+
+    /* ═══════════════════════════════════════
+       9d. HOVER VIDEO PREVIEWS
+       ═══════════════════════════════════════ */
+    function initHoverPreviews() {
+        const cards = document.querySelectorAll(".tilt-card");
+
+        cards.forEach(card => {
+            const videoElem = card.querySelector(".card-hover-video");
+            // As a placeholder, we won't inject full Youtube iframes on hover because of performance.
+            // A user can manually add `src="preview.mp4"` in HTML.
+            
+            card.addEventListener("mouseenter", () => {
+                if(videoElem && videoElem.src) {
+                    videoElem.play().catch(e => { /* Ignore auto-play strict rules */ });
+                }
+            });
+
+            card.addEventListener("mouseleave", () => {
+                if(videoElem && videoElem.src) {
+                    videoElem.pause();
+                    videoElem.currentTime = 0;
+                }
+            });
+        });
+    }
+
+    /* ═══════════════════════════════════════
+       10. VIDEO MODAL (SMOOTH ZOOM)
+       ═══════════════════════════════════════ */
+    function initVideoModal() {
+        const modal = document.getElementById("videoModal");
+        const iframe = document.getElementById("modalIframe");
+        const closeBtn = document.getElementById("closeModal");
+        const modalContent = document.getElementById("modalContent");
+        const cards = document.querySelectorAll(".tilt-card");
+
+        let expandingCard = null;
+
+        cards.forEach((card) => {
+            card.addEventListener("click", () => {
+                const videoId = card.getAttribute("data-video-id");
+                const type = card.getAttribute("data-type");
+                if (!videoId) return;
+
+                // Stop scrolling
+                if (lenis) lenis.stop();
+                
+                // Show modal overlay
+                modal.classList.add("active");
+
+                // Set iframe src (Youtube)
+                const embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1`;
+                iframe.src = embedUrl;
+
+                if (type === "short") {
+                    modalContent.classList.add("is-vertical");
+                } else {
+                    modalContent.classList.remove("is-vertical");
+                }
+            });
+        });
+
+        function closeModal() {
+            modal.classList.remove("active");
+            
+            // Allow animation to finish before clearing source
+            setTimeout(() => {
+                iframe.src = "";
+                if (lenis) lenis.start();
+            }, 400); 
+        }
+
+        closeBtn.addEventListener("click", closeModal);
+
+        modal.addEventListener("click", (e) => {
+            if (e.target === modal) closeModal();
+        });
+
+        // Escape key
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "Escape" && modal.classList.contains("active")) {
+                closeModal();
+            }
+        });
+    }
+
+    /* ═══════════════════════════════════════
+       11. TIMELINE GLOW LINE
+       ═══════════════════════════════════════ */
+    function initTimelineGlow() {
+        const glowLine = document.getElementById("timelineGlow");
+        if (!glowLine) return;
+
+        gsap.to(glowLine, {
+            height: "100%",
+            ease: "none",
+            scrollTrigger: {
+                trigger: ".timeline",
+                start: "top 70%",
+                end: "bottom 30%",
+                scrub: 1,
+            },
+        });
+    }
+
+    /* ═══════════════════════════════════════
+       12. ABOUT VISUAL ORB (Canvas)
+       ═══════════════════════════════════════ */
+    function initAboutCanvas() {
+        const canvas = document.getElementById("aboutCanvas");
+        if (!canvas) return;
+
+        const ctx = canvas.getContext("2d");
+        const container = canvas.parentElement;
+
+        function resize() {
+            const rect = container.getBoundingClientRect();
+            canvas.width = rect.width * 2; // 2x for retina
+            canvas.height = rect.height * 2;
+            ctx.scale(2, 2);
+        }
+        resize();
+        window.addEventListener("resize", resize);
+
+        const w = () => canvas.width / 2;
+        const h = () => canvas.height / 2;
+
+        let time = 0;
+
+        function draw() {
+            const cw = w();
+            const ch = h();
+            ctx.clearRect(0, 0, cw, ch);
+
+            const cx = cw / 2;
+            const cy = ch / 2;
+
+            // Rotating orbital rings
+            for (let ring = 0; ring < 4; ring++) {
+                const radius = 60 + ring * 30;
+                const speed = 0.005 + ring * 0.003;
+                const particleCount = 12 + ring * 6;
+
+                for (let i = 0; i < particleCount; i++) {
+                    const angle = (Math.PI * 2 / particleCount) * i + time * speed * (ring % 2 === 0 ? 1 : -1);
+                    const x = cx + Math.cos(angle) * radius;
+                    const y = cy + Math.sin(angle) * radius * 0.6; // Squish for 3D effect
+                    const dotR = 1.5 + Math.sin(time * 0.02 + i) * 0.5;
+                    const alpha = 0.2 + Math.sin(time * 0.03 + i * 0.5) * 0.15;
+
+                    ctx.beginPath();
+                    ctx.arc(x, y, dotR, 0, Math.PI * 2);
+                    const color = ring % 2 === 0 ? `108, 99, 255` : `191, 90, 242`;
+                    ctx.fillStyle = `rgba(${color}, ${alpha})`;
+                    ctx.fill();
+                }
+            }
+
+            // Central glow
+            const gradient = ctx.createRadialGradient(cx, cy, 0, cx, cy, 40);
+            gradient.addColorStop(0, `rgba(108, 99, 255, ${0.15 + Math.sin(time * 0.02) * 0.05})`);
+            gradient.addColorStop(1, "transparent");
+            ctx.beginPath();
+            ctx.arc(cx, cy, 40, 0, Math.PI * 2);
+            ctx.fillStyle = gradient;
+            ctx.fill();
+
+            time++;
+            requestAnimationFrame(draw);
+        }
+        draw();
+    }
+
+    /* ═══════════════════════════════════════
+       13. STATS COUNT UP
+       ═══════════════════════════════════════ */
+    function initCountUp() {
+        const statNumbers = document.querySelectorAll(".stat-number");
+
+        statNumbers.forEach((el) => {
+            const target = parseInt(el.getAttribute("data-count"), 10);
+
+            ScrollTrigger.create({
+                trigger: el,
+                start: "top 85%",
+                once: true,
+                onEnter: () => {
+                    gsap.to({ val: 0 }, {
+                        val: target,
+                        duration: 2,
+                        ease: "power2.out",
+                        onUpdate: function () {
+                            el.textContent = Math.floor(this.targets()[0].val);
+                        },
+                    });
+                },
+            });
+        });
+    }
+
+    /* ═══════════════════════════════════════
+       14. MINIMALIST CUSTOM CURSOR
+       ═══════════════════════════════════════ */
+    function initCustomCursor() {
+        if (window.innerWidth <= 768) return;
+
+        const cursor = document.getElementById("cursor");
+        const dot = cursor.querySelector(".cursor-dot");
+        const ring = cursor.querySelector(".cursor-ring");
+
+        let mouseX = 0, mouseY = 0;
+        let ringX = 0, ringY = 0;
+        let lastSparkle = 0;
+
+        document.addEventListener("mousemove", (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            
+            // Spawn sparkles on move (throttle)
+            const now = Date.now();
+            if (now - lastSparkle > 40) {
+                spawnSparkle(e.clientX, e.clientY);
+                lastSparkle = now;
+            }
+        });
+
+        function spawnSparkle(x, y) {
+            const sparkle = document.createElement("div");
+            sparkle.className = "cursor-sparkle";
+            document.body.appendChild(sparkle);
+            
+            const size = Math.random() * 8 + 3; // Slightly larger for gold
+            const destX = (Math.random() - 0.5) * 80;
+            const destY = (Math.random() - 0.5) * 80;
+            
+            gsap.set(sparkle, {
+                x: x,
+                y: y,
+                width: size,
+                height: size,
+                opacity: 1,
+                scale: 1,
+                rotate: Math.random() * 360
+            });
+            
+            gsap.to(sparkle, {
+                x: x + destX,
+                y: y + destY,
+                opacity: 0,
+                scale: 0,
+                rotate: "+=180",
+                duration: 1 + Math.random() * 0.5,
+                ease: "power2.out",
+                onComplete: () => sparkle.remove()
+            });
+        }
+
+        function update() {
+            // Smooth follow for the ring
+            ringX += (mouseX - ringX) * 0.15;
+            ringY += (mouseY - ringY) * 0.15;
+
+            gsap.set(dot, { x: mouseX, y: mouseY });
+            gsap.set(ring, { x: ringX, y: ringY });
+
+            requestAnimationFrame(update);
+        }
+        update();
+
+        // Interaction scaling
+        const targets = document.querySelectorAll("a, button, .video-card, .gd-card");
+        targets.forEach(t => {
+            t.addEventListener("mouseenter", () => {
+                gsap.to(ring, { scale: 1.5, duration: 0.3 });
+            });
+            t.addEventListener("mouseleave", () => {
+                gsap.to(ring, { scale: 1, duration: 0.3 });
+            });
+        });
+    }
+
+    /* ═══════════════════════════════════════
+       15. GRAPHIC DESIGN — SCROLL ANIMATIONS
+       ═══════════════════════════════════════ */
+    function initGraphicDesign() {
+        const section = document.querySelector(".graphic-design");
+        if (!section) return;
+
+        // Minimal editorial header reveal
+        const scrollIndicator = document.querySelector(".scroll-indicator-v2");
+        if (scrollIndicator) {
+            gsap.from(scrollIndicator, {
+                opacity: 0,
+                y: 20,
+                duration: 1,
+                delay: 2.2,
+                ease: "power2.out"
+            });
+        }
+
+        const headerChildren = section.querySelectorAll(".gd-header > *");
+        gsap.from(headerChildren, {
+            opacity: 0,
+            y: 20,
+            duration: 0.8,
+            stagger: 0.12,
+            ease: "power3.out",
+            scrollTrigger: {
+                trigger: ".gd-header",
+                start: "top 85%",
+            }
+        });
+
+        // Category reveal + card stagger for each category
+        document.querySelectorAll(".gd-category").forEach((cat) => {
+            // Category label
+            gsap.from(cat.querySelector(".gd-category-label"), {
+                opacity: 0,
+                x: -30,
+                duration: 0.8,
+                ease: "power3.out",
+                scrollTrigger: {
+                    trigger: cat,
+                    start: "top 85%",
+                }
+            });
+
+            // Cards stagger — handle reveal cleanly without the conflicting CSS class
+            const cards = cat.querySelectorAll(".gd-card");
+            // Set initial state for GSAP
+            gsap.set(cards, { opacity: 0, y: 60, scale: 0.95 });
+            
+            gsap.to(cards, {
+                opacity: 1,
+                y: 0,
+                scale: 1,
+                duration: 1,
+                stagger: 0.15,
+                ease: "expo.out",
+                scrollTrigger: {
+                    trigger: cat,
+                    start: "top 75%",
+                }
+            });
+        });
+
+        // Mark all remaining gd-reveal elements (headers, titles) as visible
+        document.querySelectorAll(".gd-reveal").forEach((el) => {
+            ScrollTrigger.create({
+                trigger: el,
+                start: "top 90%",
+                once: true,
+                onEnter: () => {
+                    el.classList.add("is-visible");
+                }
+            });
+        });
+
+        // Initialize the image lightbox
+        initImageLightbox();
+    }
+
+    /* ═══════════════════════════════════════
+       16. IMAGE LIGHTBOX (for Graphic Design)
+       ═══════════════════════════════════════ */
+    function initImageLightbox() {
+        const lightbox = document.getElementById("imgLightbox");
+        const lightboxImg = document.getElementById("imgLightboxImg");
+        const closeBtn = document.getElementById("imgLightboxClose");
+
+        if (!lightbox || !lightboxImg || !closeBtn) return;
+
+        // Click on any GD card -> open lightbox
+        document.querySelectorAll(".gd-card[data-fullimg]").forEach((card) => {
+            card.addEventListener("click", () => {
+                const imgUrl = card.getAttribute("data-fullimg");
+                if (!imgUrl) return;
+
+                lightboxImg.src = imgUrl;
+                lightbox.classList.add("active");
+
+                if (lenis) lenis.stop();
+            });
+        });
+
+        function closeLightbox() {
+            lightbox.classList.remove("active");
+            setTimeout(() => {
+                lightboxImg.src = "";
+                if (lenis) lenis.start();
+            }, 400);
+        }
+
+        closeBtn.addEventListener("click", closeLightbox);
+
+        lightbox.addEventListener("click", (e) => {
+            if (e.target === lightbox) closeLightbox();
+        });
+
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "Escape" && lightbox.classList.contains("active")) {
+                closeLightbox();
+            }
+        });
+    }
+
+    /* ═══════════════════════════════════════
+       REFRESH SCROLLTRIGGER (after intro)
+       ═══════════════════════════════════════ */
+    /* ═══════════════════════════════════════
+       17. 3D TILT EFFECT FOR CARDS
+       ═══════════════════════════════════════ */
+    function init3DTilt() {
+        const cards = document.querySelectorAll(".tilt-card, .gd-card");
         
-        iframe.src = url;
-        modal.classList.add('active');
-        lenis.stop();
-    });
-});
+        cards.forEach(card => {
+            card.addEventListener("mousemove", (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                
+                const rotateX = (y - centerY) / 10; // Subtle tilt factor
+                const rotateY = (centerX - x) / 10;
+                
+                gsap.to(card, {
+                    rotateX: rotateX,
+                    rotateY: rotateY,
+                    scale: 1.05,
+                    duration: 0.5,
+                    ease: "power2.out",
+                    perspective: 1000
+                });
+            });
+            
+            card.addEventListener("mouseleave", () => {
+                gsap.to(card, {
+                    rotateX: 0,
+                    rotateY: 0,
+                    scale: 1,
+                    duration: 0.8,
+                    ease: "elastic.out(1, 0.3)"
+                });
+            });
+        });
+    }
 
-function closeModal() {
-    modal.classList.remove('active');
-    iframe.src = '';
-    lenis.start();
-}
+    /* ═══════════════════════════════════════
+       18. CINEMATIC DUST DISINTEGRATION
+       ═══════════════════════════════════════ */
+    function initDustTransition() {
+        // --- Canvas Setup ---
+        const canvas = document.createElement('canvas');
+        canvas.id = 'dustCanvas';
+        canvas.style.cssText = 'position:fixed;inset:0;z-index:50;pointer-events:none;width:100%;height:100%;';
+        document.body.appendChild(canvas);
 
-closeBtn.addEventListener('click', closeModal);
-modalBg.addEventListener('click', closeModal);
+        const ctx = canvas.getContext('2d');
+        let W, H;
+        let particles = [];
+        const MAX_PARTICLES = 500;
+        let rafId = null;
 
-// ── CURSOR (Subtle dot) ──
-const cursor = document.createElement('div');
-cursor.style.cssText = `
-    position: fixed;
-    width: 10px;
-    height: 10px;
-    background: var(--accent);
-    border-radius: 50%;
-    pointer-events: none;
-    z-index: 9999;
-    transform: translate(-50%, -50%);
-    mix-blend-mode: difference;
-    transition: transform 0.1s ease-out;
-`;
-document.body.appendChild(cursor);
+        function resize() {
+            W = canvas.width = window.innerWidth * (window.devicePixelRatio > 1 ? 1.5 : 1);
+            H = canvas.height = window.innerHeight * (window.devicePixelRatio > 1 ? 1.5 : 1);
+            ctx.setTransform(1, 0, 0, 1, 0, 0);
+            const scale = W / window.innerWidth;
+            ctx.scale(scale, scale);
+        }
+        resize();
+        window.addEventListener('resize', resize);
 
-window.addEventListener('mousemove', e => {
-    cursor.style.left = e.clientX + 'px';
-    cursor.style.top = e.clientY + 'px';
-});
+        // --- Particle Factory ---
+        function createParticle(x, y, isEmber) {
+            const angle = Math.random() * Math.PI * 2;
+            const speed = Math.random() * 2.5 + 0.5;
+            return {
+                x, y,
+                vx: Math.cos(angle) * speed + (Math.random() - 0.5) * 1.5,
+                vy: -(Math.random() * 3.5 + 1.2) + Math.sin(angle) * speed * 0.4,
+                size: isEmber ? (Math.random() * 4.5 + 2) : (Math.random() * 3.5 + 0.8),
+                life: 1,
+                decay: 0.005 + Math.random() * 0.01,
+                isEmber,
+                hue: isEmber ? (18 + Math.random() * 22) : (200 + Math.random() * 60),
+                sat: isEmber ? (95 + Math.random() * 5) : (45 + Math.random() * 25), 
+                light: isEmber ? (50 + Math.random() * 30) : (80 + Math.random() * 20),
+                rotation: Math.random() * 360,
+                rotSpeed: (Math.random() - 0.5) * 4
+            };
+        }
 
-document.querySelectorAll('a, button, .work-item').forEach(el => {
-    el.addEventListener('mouseenter', () => {
-        cursor.style.transform = 'translate(-50%, -50%) scale(4)';
-        cursor.style.backgroundColor = 'transparent';
-        cursor.style.border = '1px solid var(--accent)';
-    });
-    el.addEventListener('mouseleave', () => {
-        cursor.style.transform = 'translate(-50%, -50%) scale(1)';
-        cursor.style.backgroundColor = 'var(--accent)';
-        cursor.style.border = 'none';
-    });
-});
+        // --- Render Loop ---
+        function render() {
+            ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+
+            for (let i = particles.length - 1; i >= 0; i--) {
+                const p = particles[i];
+
+                // Physics
+                p.x += p.vx;
+                p.y += p.vy;
+                p.vx *= 0.985;
+                p.vy *= 0.985;
+                p.vy -= 0.03;  // upward drift
+                p.life -= p.decay;
+                p.size *= 0.998;
+                p.rotation += p.rotSpeed;
+
+                if (p.life <= 0) {
+                    particles.splice(i, 1);
+                    continue;
+                }
+
+                const alpha = Math.max(0, p.life * p.life); // ease-out fade
+
+                ctx.save();
+                ctx.translate(p.x, p.y);
+                ctx.rotate(p.rotation * Math.PI / 180);
+                ctx.globalAlpha = alpha;
+
+                if (p.isEmber) {
+                    // Glow layer
+                    ctx.shadowBlur = 20;
+                    ctx.shadowColor = `hsla(${p.hue}, ${p.sat}%, ${p.light}%, ${alpha * 1.0})`;
+                    ctx.fillStyle = `hsl(${p.hue}, ${p.sat}%, ${p.light}%)`;
+                    ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+                    ctx.shadowBlur = 0;
+                } else {
+                    // Dust particle — slight square shape for more "debris" feel
+                    ctx.fillStyle = `hsl(${p.hue}, ${p.sat}%, ${p.light}%)`;
+                    ctx.beginPath();
+                    // Draw irregular shapes for a more organic dust feel
+                    if (Math.random() > 0.5) {
+                        ctx.rect(-p.size / 2, -p.size / 2, p.size, p.size);
+                    } else {
+                        ctx.arc(0, 0, p.size, 0, Math.PI * 2);
+                    }
+                    ctx.fill();
+                }
+
+                ctx.restore();
+            }
+
+            ctx.globalAlpha = 1;
+
+            if (particles.length > 0) {
+                rafId = requestAnimationFrame(render);
+            } else {
+                rafId = null;
+            }
+        }
+
+        function startRender() {
+            if (!rafId) {
+                rafId = requestAnimationFrame(render);
+            }
+        }
+
+        // --- Spawn Dust from Section ---
+        function spawnDust(rect, intensity) {
+            if (particles.length >= MAX_PARTICLES) return;
+
+            const count = Math.floor(intensity * 25) + 2; // Significant increase in density
+
+            for (let i = 0; i < count; i++) {
+                // Determine visible Y bounds
+                const viewTop = Math.max(0, rect.top);
+                const viewBottom = Math.min(window.innerHeight, rect.bottom);
+                
+                if (viewBottom <= viewTop) continue;
+
+                const x = rect.left + Math.random() * rect.width;
+                // Spawn within the visible portion of the section
+                const y = viewTop + Math.random() * (viewBottom - viewTop);
+
+                const isEmber = Math.random() < 0.15; // More embers
+                particles.push(createParticle(x, y, isEmber));
+            }
+
+            startRender();
+        }
+
+        // --- Hook into each section ---
+        const sections = document.querySelectorAll(
+            '.hero, .showreel-split-wrapper, .graphic-design, .experience, .about, .contact'
+        );
+
+        sections.forEach((section) => {
+            let lastProgress = 0;
+
+            // Identify the content container to fade
+            const content = section.querySelector('.hero-content')
+                || section.querySelector('.section-container')
+                || section.querySelector('.contact-inner')
+                || section.children[0];
+
+            ScrollTrigger.create({
+                trigger: section,
+                start: 'center center',
+                end: 'bottom top',
+                onUpdate: (self) => {
+                    const p = self.progress;
+                    const delta = p - lastProgress;
+                    lastProgress = p;
+
+                    // --- Dissolve zone: last 60% of scroll-out ---
+                    if (p > 0.35 && p < 0.98) {
+                        const dissolve = (p - 0.35) / 0.63; // 0..1
+
+                        // Spawn particles only on forward scroll
+                        if (delta > 0 && content) {
+                            const rect = section.getBoundingClientRect();
+                            spawnDust(rect, dissolve);
+                        }
+
+                        // More dramatic content treatment
+                        if (content) {
+                            const fadeAmount = dissolve * dissolve; // ease-in
+                            gsap.to(content, {
+                                opacity: 1 - fadeAmount * 0.75, // More fade
+                                filter: `brightness(${1 + fadeAmount * 0.8}) saturate(${1 - fadeAmount * 0.4})`,
+                                duration: 0.1,
+                                overwrite: 'auto'
+                            });
+                        }
+                    }
+
+                    // --- Reset when scrolling back ---
+                    if (p <= 0.35 && content) {
+                        gsap.set(content, { opacity: 1, filter: 'none' });
+                    }
+                }
+            });
+        });
+
+        // Trigger periodic refreshes during boot to sync layout
+        let refreshInterval = setInterval(() => ScrollTrigger.refresh(), 800);
+        setTimeout(() => clearInterval(refreshInterval), 4000);
+    }
+
+})();
