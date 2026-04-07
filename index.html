@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CHANDRAKANT | Cinematic Director's Cut by Anti</title>
+    
+    <!-- SEO -->
+    <meta name="description" content="A premium, AI-crafted cinematic portfolio for Chandrakant - Visual Storyteller & Video Editor.">
+    <meta name="theme-color" content="#050505">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Inter:wght@300;400;500;600&family=Cormorant+Garamond:ital,wght@1,500;1,600&display=swap" rel="stylesheet">
+
+    <!-- Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- ── DIRECTOR'S INTRO ── -->
+    <div class="loader" id="loader">
+        <div class="loader-content">
+            <div class="loader-line"></div>
+            <div class="loader-text">
+                <span class="word">CINEMATIC</span>
+                <span class="word">PORTFOLIO</span>
+                <span class="word">BY</span>
+                <span class="word accent">ANTI</span>
+            </div>
+            <div class="loader-progress">00</div>
+        </div>
+    </div>
+
+    <!-- ── NAV ── -->
+    <nav class="nav">
+        <div class="nav-inner">
+            <a href="#hero" class="nav-logo">CHANDRAKANT.</a>
+            <div class="nav-links">
+                <a href="#work" class="nav-link">ARCHIVE</a>
+                <a href="#about" class="nav-link">PHILOSOPHY</a>
+                <a href="#contact" class="nav-link">CONNECT</a>
+            </div>
+            <div class="nav-status">AVAILABLE FOR PROJECTS</div>
+        </div>
+    </nav>
+
+    <!-- ── HERO ── -->
+    <section class="hero" id="hero">
+        <div class="hero-bg">
+            <div class="hero-grain"></div>
+            <div class="hero-vignette"></div>
+            <canvas id="heroCanvas"></canvas>
+        </div>
+        
+        <div class="hero-content">
+            <div class="hero-meta reveal">VISUAL STORYTELLER / EDITOR</div>
+            <h1 class="hero-title">
+                <span class="line">THE ART OF</span>
+                <span class="line accent">RETENTION</span>
+            </h1>
+            <div class="hero-scroll">
+                <div class="scroll-line"></div>
+                <span>SCROLL TO EXPLORE</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── WORK SECTION ── -->
+    <section class="work" id="work">
+        <div class="work-header">
+            <h2 class="section-title">THE ARCHIVE.</h2>
+            <div class="work-filter">
+                <button class="filter-btn active" data-filter="all">ALL</button>
+                <button class="filter-btn" data-filter="reels">REELS</button>
+                <button class="filter-btn" data-filter="long">FEATURES</button>
+            </div>
+        </div>
+
+        <div class="work-grid">
+            <!-- REELS -->
+            <div class="work-item" data-category="reels" data-video="xXJj_Pt0aCk">
+                <div class="work-img-wrap">
+                    <img src="https://img.youtube.com/vi/xXJj_Pt0aCk/maxresdefault.jpg" alt="Work 01" loading="lazy">
+                    <div class="work-overlay">
+                        <span class="work-num">01</span>
+                        <span class="play-btn">PLAY</span>
+                    </div>
+                </div>
+            </div>
+            <div class="work-item" data-category="reels" data-video="KDY6s0J2iuw">
+                <div class="work-img-wrap">
+                    <img src="https://img.youtube.com/vi/KDY6s0J2iuw/maxresdefault.jpg" alt="Work 02" loading="lazy">
+                    <div class="work-overlay">
+                        <span class="work-num">02</span>
+                        <span class="play-btn">PLAY</span>
+                    </div>
+                </div>
+            </div>
+            <div class="work-item" data-category="reels" data-video="zAkT1JkhBlk">
+                <div class="work-img-wrap">
+                    <img src="https://img.youtube.com/vi/zAkT1JkhBlk/maxresdefault.jpg" alt="Work 03" loading="lazy">
+                    <div class="work-overlay">
+                        <span class="work-num">03</span>
+                        <span class="play-btn">PLAY</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- LONG FORM -->
+            <div class="work-item wide" data-category="long" data-video="NsJvmcyyqKA">
+                <div class="work-img-wrap">
+                    <img src="https://img.youtube.com/vi/NsJvmcyyqKA/maxresdefault.jpg" alt="Work 04" loading="lazy">
+                    <div class="work-overlay">
+                        <span class="work-num">04</span>
+                        <span class="play-btn">PLAY</span>
+                    </div>
+                </div>
+                <div class="work-desc">FEATURED PROJECT / LONG FORM</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── PHILOSOPHY ── -->
+    <section class="about" id="about">
+        <div class="about-inner">
+            <div class="about-text">
+                <h3 class="about-label">OUR PHILOSOPHY</h3>
+                <p class="about-p">"I turn attention into retention. In a world of infinite scrolling, I create moments that make people <span class="italic">stop.</span>"</p>
+                <div class="about-stats">
+                    <div class="stat">
+                        <span class="stat-n">150+</span>
+                        <span class="stat-l">PROJECTS HANDLED</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-n">03+</span>
+                        <span class="stat-l">YEARS EXP.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── FOOTER ── -->
+    <footer class="footer" id="contact">
+        <div class="footer-top">
+            <h2 class="footer-title">LET'S DIRECT<br><span class="accent">YOUR VISION.</span></h2>
+            <a href="https://wa.me/917019505592" class="footer-cta" target="_blank">START A PROJECT</a>
+        </div>
+        <div class="footer-bottom">
+            <div class="footer-copy">© 2026 CHANDRAKANT. ALL RIGHTS RESERVED.</div>
+            <div class="footer-credits">CRAFTED BY <span class="accent">ANTI</span></div>
+        </div>
+    </footer>
+
+    <!-- ── MODAL ── -->
+    <div class="modal" id="videoModal">
+        <div class="modal-bg"></div>
+        <div class="modal-content">
+            <button class="modal-close">CLOSE</button>
+            <div class="video-container">
+                <iframe id="videoIframe" src="" frameborder="0" allow="autoplay; encrypted-media; fullscreen" allowfullscreen></iframe>
+            </div>
+        </div>
+    </div>
+
+    <script src="main.js"></script>
+</body>
+</html>
