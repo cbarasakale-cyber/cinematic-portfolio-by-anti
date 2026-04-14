@@ -418,13 +418,13 @@
         // ── HOLOGRAPHIC DATA SWARM (MATRIX) ──
         const hCount = 200;
         const ringGeo = new THREE.TorusGeometry(0.8, 0.1, 4, 16);
-        const ringMat = new THREE.MeshBasicMaterial({ color: 0x8B5CF6, transparent: true, opacity: 0.8, blending: THREE.AdditiveBlending });
+        const ringMat = new THREE.MeshBasicMaterial({ color: 0x00f3ff, transparent: true, opacity: 0.8, blending: THREE.AdditiveBlending });
         const ringMesh = new THREE.InstancedMesh(ringGeo, ringMat, hCount);
         const ringDummy = new THREE.Object3D();
         mainGroup.add(ringMesh);
 
         const crossGeo = new THREE.BoxGeometry(0.3, 0.3, 0.3);
-        const crossMat = new THREE.MeshBasicMaterial({ color: 0x2DD4BF, transparent: true, opacity: 0.8, blending: THREE.AdditiveBlending });
+        const crossMat = new THREE.MeshBasicMaterial({ color: 0xff007f, transparent: true, opacity: 0.8, blending: THREE.AdditiveBlending });
         const crossMesh = new THREE.InstancedMesh(crossGeo, crossMat, hCount);
         const crossDummy = new THREE.Object3D();
         mainGroup.add(crossMesh);
@@ -584,9 +584,9 @@
             // Scroll Depth Color Breathing
             const scrollMax = document.body.scrollHeight - window.innerHeight || 1;
             const scrollNorm = Math.min(1.0, scrollY / scrollMax);
-            const colorSilver = new THREE.Color(0xF2D0A9); // Premium Champagne Gold
-            const colorCrimson = new THREE.Color(0x8B5CF6); // Ethereal Violet
-            const colorBlue = new THREE.Color(0x2DD4BF); // Cyber Teal
+            const colorSilver = new THREE.Color(0x00f3ff); // Neon Cyan
+            const colorCrimson = new THREE.Color(0xff007f); // Hyper Pink
+            const colorBlue = new THREE.Color(0xbc13fe); // Neon Violet
             let currentTheme = new THREE.Color();
             if (scrollNorm < 0.5) {
                 currentTheme.lerpColors(colorSilver, colorCrimson, scrollNorm * 2.0);
