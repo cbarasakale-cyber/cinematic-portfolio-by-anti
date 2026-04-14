@@ -1477,22 +1477,35 @@
         const lightbox = document.getElementById("imgLightbox");
         const lightboxImg = document.getElementById("imgLightboxImg");
         const pdfIframe = document.getElementById("pdfLightboxIframe");
+        const flipCard = document.getElementById("lightboxFlipCard");
         const closeBtn = document.getElementById("imgLightboxClose");
 
         if (!lightbox || !lightboxImg || !closeBtn) return;
 
         // Click on any GD card -> open lightbox
-        document.querySelectorAll(".gd-card[data-fullimg], .gd-card[data-pdf]").forEach((card) => {
+        document.querySelectorAll(".gd-card[data-fullimg], .gd-card[data-backimg], .gd-card[data-pdf]").forEach((card) => {
             card.addEventListener("click", () => {
                 const imgUrl = card.getAttribute("data-fullimg");
+                const backUrl = card.getAttribute("data-backimg");
                 const pdfUrl = card.getAttribute("data-pdf");
 
-                if (pdfUrl && pdfIframe) {
-                    lightboxImg.style.display = "none";
+                // Clear previous states
+                lightboxImg.style.display = "none";
+                if (pdfIframe) pdfIframe.style.display = "none";
+                if (flipCard) {
+                    flipCard.style.display = "none";
+                    flipCard.classList.remove("is-flipped");
+                }
+
+                if (backUrl && flipCard) {
+                    // This is a flippable asset (like Visiting Cards)
+                    flipCard.style.display = "block";
+                    document.getElementById("flipImgFront").src = imgUrl;
+                    document.getElementById("flipImgBack").src = backUrl;
+                } else if (pdfUrl && pdfIframe) {
                     pdfIframe.style.display = "block";
                     pdfIframe.src = pdfUrl;
                 } else if (imgUrl) {
-                    if (pdfIframe) pdfIframe.style.display = "none";
                     lightboxImg.style.display = "block";
                     lightboxImg.src = imgUrl;
                 } else {
@@ -1504,6 +1517,15 @@
             });
         });
 
+        if (flipCard) {
+            flipCard.addEventListener("click", (e) => {
+                e.stopPropagation(); // preserve lightbox open
+                flipCard.classList.toggle("is-flipped");
+                // Physical feedback sound
+                if(typeof uiAudio !== 'undefined' && uiAudio.enabled) uiAudio.playTick();
+            });
+        }
+
         function closeLightbox() {
             lightbox.classList.remove("active");
             setTimeout(() => {
@@ -1511,6 +1533,12 @@
                 if (pdfIframe) {
                     pdfIframe.src = "";
                     pdfIframe.style.display = "none";
+                }
+                if (flipCard) {
+                    flipCard.style.display = "none";
+                    flipCard.classList.remove("is-flipped");
+                    document.getElementById("flipImgFront").src = "";
+                    document.getElementById("flipImgBack").src = "";
                 }
                 if (lenis) lenis.start();
             }, 400);
