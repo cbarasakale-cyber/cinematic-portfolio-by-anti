@@ -353,7 +353,7 @@
 
         const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5)); // Capped at 1.5x for massive mobile GPU performance gains
 
         const mainGroup = new THREE.Group();
         scene.add(mainGroup);
@@ -375,8 +375,9 @@
             const points = [];
             // Alternate direction: even splines go Left->Right, odd go Right->Left
             const goesRight = i % 2 === 0;
-            const startX = goesRight ? -200 : 200;
-            const endX = goesRight ? 200 : -200;
+            const spawnWidth = window.innerWidth > 768 ? 200 : 80; // Compress on mobile so they remain inside narrow view
+            const startX = goesRight ? -spawnWidth : spawnWidth;
+            const endX = goesRight ? spawnWidth : -spawnWidth;
             const steps = 15; // More steps for smoother curve
             
             // perfectly space them down the scroll area
@@ -401,7 +402,8 @@
             splines.push(curve);
 
             // Draw volumetric Golden Tube along curve for intense 3D glow
-            const tubeGeo = new THREE.TubeGeometry(curve, 250, 0.7, 8, false); // Half thickness
+            const tubeSegments = window.innerWidth > 768 ? 250 : 120;
+            const tubeGeo = new THREE.TubeGeometry(curve, tubeSegments, 0.7, 8, false); // Half thickness
             const tubeMat = new THREE.MeshBasicMaterial({ 
                 color: 0xa0aab2, // Steel Silver 
                 transparent: true,
@@ -416,7 +418,7 @@
         }
 
         // ── HOLOGRAPHIC DATA SWARM (MATRIX) ──
-        const hCount = 200;
+        const hCount = window.innerWidth > 768 ? 150 : 40; // Hard scale holograms for mobile CPUs
         const ringGeo = new THREE.TorusGeometry(0.8, 0.1, 4, 16);
         const ringMat = new THREE.MeshBasicMaterial({ color: 0x00f3ff, transparent: true, opacity: 0.8, blending: THREE.AdditiveBlending });
         const ringMesh = new THREE.InstancedMesh(ringGeo, ringMat, hCount);
@@ -473,10 +475,12 @@
             let offsetX, offsetY, offsetZ;
             
             if (i < particleCount * 0.6) {
-                // 60% Spread particles across the FULL 3D space
-                offsetX = (Math.random() - 0.5) * 400; // massive spread X
-                offsetY = (Math.random() - 0.5) * 400; // massive spread Y
-                offsetZ = (Math.random() - 0.5) * 200; // massive spread Z
+                // 60% Spread particles across the FULL 3D space (compressed for mobile aspect ratio)
+                const boundX = window.innerWidth > 768 ? 400 : 130;
+                const boundY = window.innerWidth > 768 ? 400 : 400; // Keep Y tall to cover scroll
+                offsetX = (Math.random() - 0.5) * boundX; 
+                offsetY = (Math.random() - 0.5) * boundY; 
+                offsetZ = (Math.random() - 0.5) * 200; 
             } else {
                 // 40% Cluster tightly around the threads
                 const rad = Math.random() * 3.5;
