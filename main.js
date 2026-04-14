@@ -373,19 +373,19 @@
 
         for (let i = 0; i < numSplines; i++) {
             const points = [];
-            // Generate organic curve points spanning across screen
-            const startX = -120 - Math.random() * 40;
-            const endX = 120 + Math.random() * 40;
-            const steps = 10;
+            // Alternate direction: even splines go Left->Right, odd go Right->Left
+            const goesRight = i % 2 === 0;
+            const startX = goesRight ? -200 : 200;
+            const endX = goesRight ? 200 : -200;
+            const steps = 15; // More steps for smoother curve
             
-            // To cover "full page scroll" evenly, distribute them incrementally 
-            // from +100 down to -650 based on their index.
-            const baseY = 100 - (i * (750 / numSplines)); 
+            // perfectly space them down the scroll area
+            const baseY = 150 - (i * (850 / numSplines)); 
             
-            for (let j = 0; j <= steps; j++) {
+            for (let j = 0; j <= Math.max(steps, 1); j++) {
                 const x = startX + ((endX - startX) * (j / steps));
                 const y = baseY + (Math.random() - 0.5) * 120;
-                const z = (Math.random() - 0.5) * 80 - (i * 8); 
+                const z = (Math.random() - 0.5) * 60 - (i * 8); 
                 points.push(new THREE.Vector3(x, y, z));
             }
 
@@ -394,11 +394,11 @@
             splines.push(curve);
 
             // Draw volumetric Golden Tube along curve for intense 3D glow
-            const tubeGeo = new THREE.TubeGeometry(curve, 150, 1.25, 6, false); // Much thicker radius
+            const tubeGeo = new THREE.TubeGeometry(curve, 250, 1.4, 8, false); // Thicker radius, smoother
             const tubeMat = new THREE.MeshBasicMaterial({ 
-                color: 0xffaa00, // Deeper radiant Gold glow
-                transparent: true, 
-                opacity: 0.55,   // Highly visible glow
+                color: 0xffcc00, // Definitively Golden 
+                transparent: true,
+                opacity: 0.8, // Massive glow value
                 blending: THREE.AdditiveBlending,
                 depthWrite: false
             });
@@ -409,7 +409,7 @@
         }
 
         // ── PARTICLES ALONG THREADS ──
-        const particleCount = window.innerWidth > 768 ? 6000 : 2500; // Hyper dense (1000 per thread)
+        const particleCount = window.innerWidth > 768 ? 7500 : 3500; // Hyper dense
         const pGeo = new THREE.BufferGeometry();
         const pPos = new Float32Array(particleCount * 3);
         const pColors = new Float32Array(particleCount * 3);
@@ -558,18 +558,16 @@
                 
                 if (mouseY !== -1000) {
                     const dx = basX - worldMouseX;
-                    // Account for Z-depth of mainGroup rotation manually for precision if needed
-                    // but simple mapping works best
                     const dy = basY - worldMouseY;
                     const distSq = dx*dx + dy*dy;
 
-                    if (distSq < 800) { // Large radius of interaction
-                        const force = (800 - distSq) / 800; // ease out
+                    if (distSq < 1500) { // Massive radius of interaction
+                        const force = (1500 - distSq) / 1500; 
                         const dist = Math.sqrt(distSq);
                         if (dist > 0.001) {
-                            pushX = (dx / dist) * force * 15.0; // intense explosion repel
-                            pushY = (dy / dist) * force * 15.0;
-                            pushZ = force * 8.0; 
+                            pushX = (dx / dist) * force * 18.0; // Violent push
+                            pushY = (dy / dist) * force * 18.0;
+                            pushZ = force * 12.0; 
                         }
                     }
                 }
