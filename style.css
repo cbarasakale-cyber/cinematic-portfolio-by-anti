@@ -924,8 +924,14 @@ img { display: block; max-width: 100%; }
     inset: -5%; /* slightly larger for zoom */
     background-size: cover;
     background-position: center;
-    transition: transform 0.8s var(--ease-out);
+    transform: scale(1.4); /* Defaults zoomed in */
+    transition: transform 1.2s cubic-bezier(0.19, 1, 0.22, 1), filter 1.2s ease;
     z-index: 1;
+}
+
+.cinematic-card:hover .card-thumb {
+    transform: scale(1.1); /* Slams down to focus on hover */
+    filter: brightness(0.7) contrast(1.2);
 }
 
 .card-hover-video {
@@ -2061,3 +2067,56 @@ img { display: block; max-width: 100%; }
     will-change: transform, opacity;
 }
 
+/* ── Audio Toggle ── */
+.audio-toggle {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background: rgba(20,20,20,0.6);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 30px;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 100;
+    transition: all 0.3s ease;
+}
+.audio-toggle:hover {
+    border-color: var(--accent);
+    background: rgba(30,30,30,0.8);
+}
+.audio-bars {
+    display: flex;
+    gap: 3px;
+    height: 12px;
+    align-items: center;
+}
+.audio-bars .bar {
+    width: 2px;
+    background: var(--text-dim);
+    transition: all 0.2s ease;
+}
+.audio-bars .bar:nth-child(1){height: 4px;}
+.audio-bars .bar:nth-child(2){height: 8px;}
+.audio-bars .bar:nth-child(3){height: 6px;}
+.audio-toggle.active .audio-bars .bar {
+    background: var(--accent);
+    animation: eqPlay 0.8s infinite ease-in-out alternate;
+}
+.audio-toggle.active .bar:nth-child(2){animation-delay: 0.2s;}
+.audio-toggle.active .bar:nth-child(3){animation-delay: 0.4s;}
+@keyframes eqPlay {
+    0% { height: 4px; }
+    100% { height: 12px; }
+}
+.audio-text {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    color: var(--text-dim);
+}
+.audio-toggle.active .audio-text {
+    color: var(--accent);
+}

@@ -11,10 +11,92 @@
 
     let lenis = null;
 
+    /* ═══════════════════════════════════════
+       AUDIO UX ENGINE (WEB AUDIO SYNTHESIS)
+       ═══════════════════════════════════════ */
+    class UXAudio {
+        constructor() {
+            // Context initialized on first user interaction
+            this.ctx = null;
+            this.enabled = false;
+        }
+
+        init() {
+            if (!this.ctx) {
+                this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+                this.masterGain = this.ctx.createGain();
+                this.masterGain.connect(this.ctx.destination);
+                this.masterGain.gain.value = 0.4;
+            }
+        }
+
+        toggle() {
+            this.init();
+            if (this.ctx.state === 'suspended') this.ctx.resume();
+            this.enabled = !this.enabled;
+            return this.enabled;
+        }
+
+        playTick() {
+            if (!this.enabled || !this.ctx) return;
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.connect(gain);
+            gain.connect(this.masterGain);
+            
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(800, this.ctx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(100, this.ctx.currentTime + 0.05);
+            
+            gain.gain.setValueAtTime(0.0, this.ctx.currentTime);
+            gain.gain.linearRampToValueAtTime(0.3, this.ctx.currentTime + 0.01);
+            gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.05);
+
+            osc.start(this.ctx.currentTime);
+            osc.stop(this.ctx.currentTime + 0.06);
+        }
+
+        playBoom() {
+            if (!this.enabled || !this.ctx) return;
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.connect(gain);
+            gain.connect(this.masterGain);
+            
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(120, this.ctx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(20, this.ctx.currentTime + 0.5);
+            
+            gain.gain.setValueAtTime(0.0, this.ctx.currentTime);
+            gain.gain.linearRampToValueAtTime(0.8, this.ctx.currentTime + 0.05);
+            gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.8);
+
+            osc.start(this.ctx.currentTime);
+            osc.stop(this.ctx.currentTime + 1.0);
+        }
+    }
+    const uiAudio = new UXAudio();
+
     function init() {
+        initAudioToggle();
         initIntro();
         initCustomCursor();
         initThumbnails();
+    }
+
+    /* ═══════════════════════════════════════
+       0. AUDIO TOGGLE BINDING
+       ═══════════════════════════════════════ */
+    function initAudioToggle() {
+        const toggleBtn = document.getElementById("audioToggle");
+        if(toggleBtn) {
+            toggleBtn.addEventListener('click', (e) => {
+                const isOn = uiAudio.toggle();
+                e.currentTarget.classList.toggle('active', isOn);
+                e.currentTarget.querySelector('.audio-text').innerText = isOn ? 'SOUND: ON' : 'SOUND: OFF';
+                if(isOn) uiAudio.playTick();
+            });
+        }
     }
 
     /* ═══════════════════════════════════════
@@ -191,13 +273,38 @@
         });
         gsap.ticker.lagSmoothing(0);
 
-        // Smooth scroll for anchor links
+        // Smooth scroll for anchor links with Void Transition
         document.querySelectorAll("[data-scroll]").forEach((link) => {
             link.addEventListener("click", (e) => {
                 e.preventDefault();
                 const target = document.querySelector(link.getAttribute("href"));
                 if (target) {
-                    lenis.scrollTo(target, { offset: -40, duration: 1.5 });
+                    if (window.__threeCamera) {
+                        // Phase 5: Void Camera Transition
+                        const cam = window.__threeCamera;
+                        if(typeof uiAudio !== 'undefined' && uiAudio.enabled) uiAudio.playBoom();
+                        
+                        gsap.to(document.body, { opacity: 0, duration: 0.5, ease: 'power2.in' });
+                        gsap.to(cam.position, {
+                            z: -200, // Plunge forward into the deep grid
+                            duration: 0.6,
+                            ease: 'power4.in',
+                            onComplete: () => {
+                                // Teleport physical scroll directly behind the blackout
+                                lenis.scrollTo(target, { offset: -40, duration: 0, immediate: true });
+                                
+                                // Reset camera way back for snap-in effect
+                                cam.position.z = 250; 
+
+                                // Fly camera physically back to default position out of the void
+                                gsap.to(cam.position, { z: 60, duration: 1.5, ease: 'expo.out' });
+                                gsap.to(document.body, { opacity: 1, duration: 0.8, ease: 'power2.out', delay: 0.1 });
+                            }
+                        });
+                    } else {
+                        // Fallback
+                        lenis.scrollTo(target, { offset: -40, duration: 1.5 });
+                    }
                 }
                 // Close mobile menu if open
                 closeMobileMenu();
@@ -270,10 +377,26 @@
     function initHeroAnimations() {
         const tl = gsap.timeline({ delay: 0.2 });
 
+        // Setup Kinetic Typography for Hero
+        const titleEl = document.getElementById("heroTitle");
+        if (titleEl) {
+            const rawText = titleEl.innerText;
+            titleEl.innerHTML = "";
+            rawText.split("").forEach(char => {
+                const s = document.createElement("span");
+                s.className = "k-char";
+                s.innerText = char;
+                s.style.display = "inline-block";
+                s.style.transformStyle = "preserve-3d";
+                titleEl.appendChild(s);
+            });
+            titleEl.style.perspective = "1000px";
+        }
+
         // Stagger hero text
-        tl.fromTo(".hero-title",
-            { opacity: 0, y: 60, scale: 1.1 },
-            { opacity: 1, y: 0, scale: 1, duration: 1.2, ease: "power3.out" },
+        tl.fromTo(".k-char",
+            { opacity: 0, y: 60, scale: 1.1, rotationX: 90 },
+            { opacity: 1, y: 0, scale: 1, rotationX: 0, duration: 1.2, ease: "power3.out", stagger: 0.05 },
             0.5
         );
         tl.fromTo(".hero-subtitle",
@@ -325,6 +448,34 @@
                     ease: "power2.out"
                 });
             });
+
+            // Kinetic Typography Proximity Effect
+            const kChars = document.querySelectorAll(".k-char");
+            kChars.forEach(char => {
+                const rect = char.getBoundingClientRect();
+                const charX = rect.left + rect.width / 2;
+                const charY = rect.top + rect.height / 2;
+                const dist = Math.sqrt(Math.pow(charX - e.clientX, 2) + Math.pow(charY - e.clientY, 2));
+
+                if (dist < 150) {
+                    const force = (150 - dist) / 150;
+                    gsap.to(char, {
+                        z: force * 80,
+                        x: (charX - e.clientX) * force * 0.1,
+                        y: (charY - e.clientY) * force * 0.1,
+                        rotationY: (charX - e.clientX) * force * 0.2,
+                        rotationX: (e.clientY - charY) * force * 0.2,
+                        color: 'var(--accent)',
+                        textShadow: '0 0 20px var(--accent-glow)',
+                        duration: 0.3
+                    });
+                } else {
+                    gsap.to(char, {
+                        z: 0, x: 0, y: 0, rotationY: 0, rotationX: 0, color: 'inherit', textShadow: 'none',
+                        duration: 0.8, ease: "elastic.out(1, 0.3)"
+                    });
+                }
+            });
         });
 
         hero.addEventListener("mouseleave", () => {
@@ -333,6 +484,9 @@
             
             floatingSvgs.forEach((svg) => {
                 gsap.to(svg, { x: 0, y: 0, duration: 1.5, ease: "power2.out" });
+            });
+            document.querySelectorAll(".k-char").forEach(char => {
+                gsap.to(char, { z:0, x:0, y:0, rotationY:0, rotationX:0, color:'inherit', textShadow:'none', duration: 0.8, ease: "elastic.out(1, 0.3)" });
             });
         });
     }
@@ -350,6 +504,7 @@
 
         const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
         camera.position.z = 60;
+        window.__threeCamera = camera; // Export for Phase 5 Void Transitions
 
         const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
@@ -854,6 +1009,26 @@
                     start: "top 85%",
                 }
             });
+
+            // Phase 4: Internal Parallax Background Masking
+            section.querySelectorAll(".video-card").forEach(card => {
+                const thumb = card.querySelector('.card-thumb');
+                if(thumb) {
+                    gsap.fromTo(thumb, 
+                        { backgroundPosition: "50% 0%" },
+                        {
+                            backgroundPosition: "50% 100%",
+                            ease: "none",
+                            scrollTrigger: {
+                                trigger: card,
+                                start: "top bottom",
+                                end: "bottom top",
+                                scrub: true
+                            }
+                        }
+                    );
+                }
+            });
         });
     }
 
@@ -1154,24 +1329,52 @@
 
         function update() {
             // Smooth follow for the ring
-            ringX += (mouseX - ringX) * 0.15;
-            ringY += (mouseY - ringY) * 0.15;
+            const dx = mouseX - ringX;
+            const dy = mouseY - ringY;
+            ringX += dx * 0.15;
+            ringY += dy * 0.15;
+
+            // Viscous Deformation
+            const velocity = Math.min(Math.sqrt(dx*dx + dy*dy) * 0.05, 1.5);
+            const angle = Math.atan2(dy, dx) * 180 / Math.PI;
 
             gsap.set(dot, { x: mouseX, y: mouseY });
-            gsap.set(ring, { x: ringX, y: ringY });
+            gsap.set(ring, { 
+                x: ringX, 
+                y: ringY,
+                scaleX: 1 + velocity,
+                scaleY: 1 - velocity * 0.3,
+                rotation: angle
+            });
 
             requestAnimationFrame(update);
         }
         update();
 
-        // Interaction scaling
+        // Magnetic scaling & physics
         const targets = document.querySelectorAll("a, button, .video-card, .gd-card");
         targets.forEach(t => {
             t.addEventListener("mouseenter", () => {
-                gsap.to(ring, { scale: 1.5, duration: 0.3 });
+                gsap.to(ring, { scale: 1.8, duration: 0.3 });
+                // Play tiny click if audio engine loaded
+                if(typeof uiAudio !== 'undefined' && uiAudio.enabled) uiAudio.playTick();
             });
+            
+            t.addEventListener("mousemove", (e) => {
+                // Ignore magnetic effect on massive cards, only do it for buttons/links
+                if (!t.classList.contains('video-card') && !t.classList.contains('gd-card')) {
+                    const rect = t.getBoundingClientRect();
+                    const x = e.clientX - rect.left - rect.width / 2;
+                    const y = e.clientY - rect.top - rect.height / 2;
+                    gsap.to(t, { x: x * 0.4, y: y * 0.4, duration: 0.3, ease: 'power2.out' });
+                }
+            });
+
             t.addEventListener("mouseleave", () => {
                 gsap.to(ring, { scale: 1, duration: 0.3 });
+                if (!t.classList.contains('video-card') && !t.classList.contains('gd-card')) {
+                    gsap.to(t, { x: 0, y: 0, duration: 0.6, ease: 'elastic.out(1, 0.3)' });
+                }
             });
         });
     }
