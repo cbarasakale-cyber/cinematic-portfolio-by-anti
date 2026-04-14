@@ -394,11 +394,11 @@
             splines.push(curve);
 
             // Draw volumetric Golden Tube along curve for intense 3D glow
-            const tubeGeo = new THREE.TubeGeometry(curve, 150, 0.35, 6, false);
+            const tubeGeo = new THREE.TubeGeometry(curve, 150, 1.25, 6, false); // Much thicker radius
             const tubeMat = new THREE.MeshBasicMaterial({ 
-                color: 0xffcc00, // Rich Golden glow
+                color: 0xffaa00, // Deeper radiant Gold glow
                 transparent: true, 
-                opacity: 0.18,   // Volumetric intensity
+                opacity: 0.55,   // Highly visible glow
                 blending: THREE.AdditiveBlending,
                 depthWrite: false
             });
@@ -506,12 +506,8 @@
             time += 0.01;
             pMat.uniforms.time.value = time;
 
-            // Smoothly Lerp group rotation for mouse follow
-            targetX = mouseX * 0.0003;
-            targetY = mouseY * 0.0003;
-            
-            mainGroup.rotation.y += (targetX - mainGroup.rotation.y) * 0.05;
-            mainGroup.rotation.x += (targetY - mainGroup.rotation.x) * 0.05;
+            // (Global mouse tracking rotation disabled to focus on individual particle physics)
+
 
             // Scroll parallax depth effect
             const scrollY = window.scrollY || document.documentElement.scrollTop;
@@ -555,23 +551,25 @@
                 let basY = pt.y + data.offsetY + waveOffset;
                 let basZ = pt.z + data.offsetZ;
 
-                // Physics: Mouse Repulsion
+                // Physics: Huge Individual Mouse Repulsion
                 let pushX = 0;
                 let pushY = 0;
                 let pushZ = 0;
                 
                 if (mouseY !== -1000) {
                     const dx = basX - worldMouseX;
+                    // Account for Z-depth of mainGroup rotation manually for precision if needed
+                    // but simple mapping works best
                     const dy = basY - worldMouseY;
                     const distSq = dx*dx + dy*dy;
 
-                    if (distSq < 200) { // radius of interaction
-                        const force = (200 - distSq) / 200;
+                    if (distSq < 800) { // Large radius of interaction
+                        const force = (800 - distSq) / 800; // ease out
                         const dist = Math.sqrt(distSq);
                         if (dist > 0.001) {
-                            pushX = (dx / dist) * force * 5.0; // repel strength
-                            pushY = (dy / dist) * force * 5.0;
-                            pushZ = force * 3.0; // push slightly back
+                            pushX = (dx / dist) * force * 15.0; // intense explosion repel
+                            pushY = (dy / dist) * force * 15.0;
+                            pushZ = force * 8.0; 
                         }
                     }
                 }
