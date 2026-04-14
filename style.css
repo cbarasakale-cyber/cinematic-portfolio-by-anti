@@ -924,13 +924,13 @@ img { display: block; max-width: 100%; }
     inset: -5%; /* slightly larger for zoom */
     background-size: cover;
     background-position: center;
-    transform: scale(1.4); /* Defaults zoomed in */
+    transform: scale(1.4) translateY(var(--parallax-y, 0%)); /* Defaults zoomed in + Parallax Shift */
     transition: transform 1.2s cubic-bezier(0.19, 1, 0.22, 1), filter 1.2s ease;
     z-index: 1;
 }
 
 .cinematic-card:hover .card-thumb {
-    transform: scale(1.1); /* Slams down to focus on hover */
+    transform: scale(1.1) translateY(var(--parallax-y, 0%)); /* Focus bounce without snapping parallax */
     filter: brightness(0.7) contrast(1.2);
 }
 

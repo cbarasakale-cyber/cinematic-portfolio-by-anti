@@ -44,16 +44,16 @@
             osc.connect(gain);
             gain.connect(this.masterGain);
             
-            osc.type = 'triangle';
-            osc.frequency.setValueAtTime(800, this.ctx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(100, this.ctx.currentTime + 0.05);
+            osc.type = 'square';
+            osc.frequency.setValueAtTime(1500, this.ctx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(100, this.ctx.currentTime + 0.02);
             
             gain.gain.setValueAtTime(0.0, this.ctx.currentTime);
-            gain.gain.linearRampToValueAtTime(0.3, this.ctx.currentTime + 0.01);
-            gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.05);
+            gain.gain.linearRampToValueAtTime(0.5, this.ctx.currentTime + 0.002);
+            gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.02);
 
             osc.start(this.ctx.currentTime);
-            osc.stop(this.ctx.currentTime + 0.06);
+            osc.stop(this.ctx.currentTime + 0.03);
         }
 
         playBoom() {
@@ -284,7 +284,8 @@
                         const cam = window.__threeCamera;
                         if(typeof uiAudio !== 'undefined' && uiAudio.enabled) uiAudio.playBoom();
                         
-                        gsap.to(document.body, { opacity: 0, duration: 0.5, ease: 'power2.in' });
+                        const faders = document.querySelectorAll("body > *:not(#threeBackground):not(.audio-toggle):not(script)");
+                        gsap.to(faders, { opacity: 0, duration: 0.5, ease: 'power2.in' });
                         gsap.to(cam.position, {
                             z: -200, // Plunge forward into the deep grid
                             duration: 0.6,
@@ -298,7 +299,7 @@
 
                                 // Fly camera physically back to default position out of the void
                                 gsap.to(cam.position, { z: 60, duration: 1.5, ease: 'expo.out' });
-                                gsap.to(document.body, { opacity: 1, duration: 0.8, ease: 'power2.out', delay: 0.1 });
+                                gsap.to(faders, { opacity: 1, duration: 0.8, ease: 'power2.out', delay: 0.1 });
                             }
                         });
                     } else {
@@ -380,8 +381,12 @@
         // Setup Kinetic Typography for Hero
         const titleEl = document.getElementById("heroTitle");
         if (titleEl) {
-            const rawText = titleEl.innerText;
+            const rawText = titleEl.textContent; // TextContent is robust against hidden rects
             titleEl.innerHTML = "";
+            
+            // Reattach the title animation block here since GSAP requires the container to be visible
+            gsap.to(titleEl, { opacity: 1, duration: 0.1 }); 
+
             rawText.split("").forEach(char => {
                 const s = document.createElement("span");
                 s.className = "k-char";
@@ -394,6 +399,11 @@
         }
 
         // Stagger hero text
+        tl.fromTo(".hero-title",
+            { opacity: 0 },
+            { opacity: 1, duration: 0.5 },
+            0.5
+        );
         tl.fromTo(".k-char",
             { opacity: 0, y: 60, scale: 1.1, rotationX: 90 },
             { opacity: 1, y: 0, scale: 1, rotationX: 0, duration: 1.2, ease: "power3.out", stagger: 0.05 },
@@ -1010,14 +1020,14 @@
                 }
             });
 
-            // Phase 4: Internal Parallax Background Masking
+            // Phase 4: Internal Parallax Background Masking via CSS transform variable
             section.querySelectorAll(".video-card").forEach(card => {
                 const thumb = card.querySelector('.card-thumb');
                 if(thumb) {
                     gsap.fromTo(thumb, 
-                        { backgroundPosition: "50% 0%" },
+                        { "--parallax-y": "-15%" },
                         {
-                            backgroundPosition: "50% 100%",
+                            "--parallax-y": "15%",
                             ease: "none",
                             scrollTrigger: {
                                 trigger: card,
