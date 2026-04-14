@@ -157,8 +157,6 @@
         initGraphicDesign();
         initCountUp();
         initCustomCursor();
-        initDustTransition();
-
         
         // Final refresh sequence
         setTimeout(() => ScrollTrigger.refresh(), 500);
@@ -362,6 +360,7 @@
 
         // ── SPLINES (NEURAL THREADS) ──
         const splines = [];
+        const splineObjects = []; // Store lines for animation
         const numSplines = 12; // Increased for full page coverage
         
         // Colors for particles (Theme)
@@ -380,14 +379,11 @@
             const steps = 10;
             
             // To cover "full page scroll", we start Y from top and map down deeply
-            // Max scroll ~10,000px -> Y shift +250. So threads must go down to -400.
             const baseY = 80 - (Math.random() * 450); 
             
             for (let j = 0; j <= steps; j++) {
                 const x = startX + ((endX - startX) * (j / steps));
-                // Vary Y organically
                 const y = baseY + (Math.random() - 0.5) * 120;
-                // Deeper Z for layered background
                 const z = (Math.random() - 0.5) * 80 - (i * 8); 
                 points.push(new THREE.Vector3(x, y, z));
             }
@@ -396,15 +392,17 @@
             curve.closed = false;
             splines.push(curve);
 
-            // Draw faint Silver line along curve
+            // Draw Silver line along curve with heavy glow
             const pointsGeo = new THREE.BufferGeometry().setFromPoints(curve.getPoints(150));
             const lineMat = new THREE.LineBasicMaterial({ 
-                color: 0xc0c0c0, // Silver
+                color: 0xffffff, // Brighter white/silver
                 transparent: true, 
-                opacity: 0.15,
+                opacity: 0.45,   // Higher intensity
                 blending: THREE.AdditiveBlending
             });
             const splineObject = new THREE.Line(pointsGeo, lineMat);
+            splineObject.userData.basePts = curve.getPoints(150);
+            splineObjects.push(splineObject);
             mainGroup.add(splineObject);
         }
 
@@ -459,8 +457,8 @@
                 void main() {
                     vColor = color;
                     vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
-                    // Pulsing size based on time and unique particle size
-                    float pulse = 1.0 + sin(time * 2.0 + size * 10.0) * 0.4;
+                    // Stronger pulsing size based on time and unique particle size
+                    float pulse = 1.0 + sin(time * 3.0 + size * 10.0) * 0.8;
                     gl_PointSize = size * pulse * (100.0 / -mvPosition.z);
                     gl_Position = projectionMatrix * mvPosition;
                 }
@@ -472,7 +470,7 @@
                     float dist = length(gl_PointCoord - vec2(0.5));
                     if (dist > 0.5) discard;
                     float alpha = pow((0.5 - dist) * 2.0, 1.5); // Smoother falloff
-                    gl_FragColor = vec4(vColor, alpha * 0.9);
+                    gl_FragColor = vec4(vColor, alpha * 2.0); // Doubled Intensity
                 }
             `,
             transparent: true,
@@ -521,6 +519,18 @@
             // Approximate Mouse to world mapping
             const worldMouseX = (mouseX / windowHalfX) * 45;
             const worldMouseY = -(mouseY / windowHalfY) * 30 - mainGroup.position.y;
+
+            // Animate Thread Geometries to flow smoothly
+            for (let i = 0; i < numSplines; i++) {
+                const lineObj = splineObjects[i];
+                const pos = lineObj.geometry.attributes.position;
+                const pts = lineObj.userData.basePts;
+                for(let j = 0; j < pts.length; j++) {
+                    const waveOffset = Math.sin(time + pts[j].x * 0.05) * 1.5;
+                    pos.setXYZ(j, pts[j].x, pts[j].y + waveOffset, pts[j].z);
+                }
+                pos.needsUpdate = true;
+            }
 
             // Update particles along splines
             for (let i = 0; i < particleCount; i++) {
