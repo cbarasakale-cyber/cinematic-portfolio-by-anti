@@ -215,8 +215,8 @@ img { display: block; max-width: 100%; }
 /* Signature */
 .intro-signature {
     position: absolute;
-    bottom: -5%; /* Adjusted from -10% for better peak visibility */
-    right: 5%;  /* Moved further in to prevent mobile cutoff */
+    top: 105%; /* Pushes it strictly below the main title */
+    right: 5%;
     width: min(350px, 40vw);
     z-index: 20;
     pointer-events: none;
@@ -224,7 +224,7 @@ img { display: block; max-width: 100%; }
 
 @media (max-width: 768px) {
     .intro-signature {
-        bottom: 5%;
+        top: 110%; /* More clearance on mobile */
         right: 50%;
         transform: translateX(50%);
         width: min(280px, 80vw);
@@ -279,15 +279,18 @@ img { display: block; max-width: 100%; }
 .intro-tool-icon.ae { top: 35%; left: -20px; color: #cc99ff; border-color: #7a4acc; }
 
 @media (max-width: 768px) {
+    .intro-main-wrap {
+        padding: 2rem 1rem; /* Reduced padding to fit more in viewport */
+    }
     .intro-tool-icon {
-        width: 28px;
-        height: 28px;
+        width: 30px;
+        height: 30px;
         font-size: 11px;
     }
-    .intro-tool-icon.pr { left: 5%; }
-    .intro-tool-icon.ai { right: 5%; }
-    .intro-tool-icon.dr { right: 0; bottom: 5%; }
-    .intro-tool-icon.ae { left: 0; }
+    .intro-tool-icon.pr { left: 10%; top: -10px; }
+    .intro-tool-icon.ai { right: 10%; top: -10px; }
+    .intro-tool-icon.dr { right: 10%; bottom: 10%; }
+    .intro-tool-icon.ae { left: 10%; top: 40%; }
 }
 
 .intro-tool-icon svg {
