@@ -1483,11 +1483,12 @@
         if (!lightbox || !lightboxImg || !closeBtn) return;
 
         // Click on any GD card -> open lightbox
-        document.querySelectorAll(".gd-card[data-fullimg], .gd-card[data-backimg], .gd-card[data-pdf]").forEach((card) => {
-            card.addEventListener("click", () => {
-                const imgUrl = card.getAttribute("data-fullimg");
-                const backUrl = card.getAttribute("data-backimg");
-                const pdfUrl = card.getAttribute("data-pdf");
+        document.querySelectorAll(".gd-card[data-fullimg], .gd-card[data-backimg], .gd-card[data-pdf]").forEach((cardEl) => {
+            cardEl.addEventListener("click", (e) => {
+                const targetEl = e.currentTarget;
+                const imgUrl = targetEl.getAttribute("data-fullimg");
+                const backUrl = targetEl.getAttribute("data-backimg");
+                const pdfUrl = targetEl.getAttribute("data-pdf");
 
                 // Clear previous states
                 lightboxImg.style.display = "none";
@@ -1495,19 +1496,24 @@
                 if (flipCard) {
                     flipCard.style.display = "none";
                     flipCard.classList.remove("is-flipped");
+                    // Reset opacity for GSAP conflicts
+                    gsap.set([flipCard, "#flipImgFront", "#flipImgBack"], { opacity: 1, scale: 1 });
                 }
 
                 if (backUrl && flipCard) {
-                    // This is a flippable asset (like Visiting Cards)
+                    // This is a flippable asset (like Visiting Card Design 1)
                     flipCard.style.display = "block";
-                    document.getElementById("flipImgFront").src = imgUrl;
-                    document.getElementById("flipImgBack").src = backUrl;
+                    const frontImg = document.getElementById("flipImgFront");
+                    const backImg = document.getElementById("flipImgBack");
+                    if (frontImg) frontImg.src = imgUrl || "";
+                    if (backImg) backImg.src = backUrl || "";
                 } else if (pdfUrl && pdfIframe) {
                     pdfIframe.style.display = "block";
                     pdfIframe.src = pdfUrl;
                 } else if (imgUrl) {
                     lightboxImg.style.display = "block";
                     lightboxImg.src = imgUrl;
+                    gsap.fromTo(lightboxImg, { opacity: 0, scale: 0.95 }, { opacity: 1, scale: 1, duration: 0.4 });
                 } else {
                     return;
                 }
