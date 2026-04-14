@@ -638,6 +638,7 @@ img { display: block; max-width: 100%; }
     margin-bottom: 2rem;
     color: #fff;
     opacity: 0;
+    white-space: nowrap;
     width: 100%;
 }
 
