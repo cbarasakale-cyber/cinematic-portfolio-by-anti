@@ -361,7 +361,7 @@
         // ── SPLINES (NEURAL THREADS) ──
         const splines = [];
         const splineObjects = []; // Store lines for animation
-        const numSplines = 12; // Increased for full page coverage
+        const numSplines = 28; // Increased heavily for dense full page coverage
         
         // Colors for particles (Theme)
         const colors = [
@@ -378,8 +378,9 @@
             const endX = 120 + Math.random() * 40;
             const steps = 10;
             
-            // To cover "full page scroll", we start Y from top and map down deeply
-            const baseY = 80 - (Math.random() * 450); 
+            // To cover "full page scroll" evenly, distribute them incrementally 
+            // from +100 down to -650 based on their index.
+            const baseY = 100 - (i * (750 / numSplines)); 
             
             for (let j = 0; j <= steps; j++) {
                 const x = startX + ((endX - startX) * (j / steps));
@@ -397,7 +398,7 @@
             const lineMat = new THREE.LineBasicMaterial({ 
                 color: 0xffffff, // Brighter white/silver
                 transparent: true, 
-                opacity: 0.45,   // Higher intensity
+                opacity: 0.8,    // Very intense glow
                 blending: THREE.AdditiveBlending
             });
             const splineObject = new THREE.Line(pointsGeo, lineMat);
@@ -407,7 +408,7 @@
         }
 
         // ── PARTICLES ALONG THREADS ──
-        const particleCount = window.innerWidth > 768 ? 1200 : 500; // Optimize for mobile
+        const particleCount = window.innerWidth > 768 ? 2800 : 1000; // Scaled up heavily
         const pGeo = new THREE.BufferGeometry();
         const pPos = new Float32Array(particleCount * 3);
         const pColors = new Float32Array(particleCount * 3);
