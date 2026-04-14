@@ -382,10 +382,17 @@
             // perfectly space them down the scroll area
             const baseY = 150 - (i * (850 / numSplines)); 
             
+            // Elegant mathematical flowing wave constants
+            const freqY = 0.015 + (Math.random() * 0.005);
+            const freqZ = 0.01 + (Math.random() * 0.005);
+            const phase = Math.random() * Math.PI * 2;
+            const ampY = 40 + (Math.random() * 30);
+            
             for (let j = 0; j <= Math.max(steps, 1); j++) {
                 const x = startX + ((endX - startX) * (j / steps));
-                const y = baseY + (Math.random() - 0.5) * 120;
-                const z = (Math.random() - 0.5) * 60 - (i * 8); 
+                // Perfect flowing sine curves instead of random jagged noise
+                const y = baseY + Math.sin(x * freqY + phase) * ampY;
+                const z = Math.cos(x * freqZ + phase) * 30 - (i * 8); 
                 points.push(new THREE.Vector3(x, y, z));
             }
 
@@ -411,13 +418,13 @@
         // ── HOLOGRAPHIC DATA SWARM (MATRIX) ──
         const hCount = 200;
         const ringGeo = new THREE.TorusGeometry(0.8, 0.1, 4, 16);
-        const ringMat = new THREE.MeshBasicMaterial({ color: 0x0A84FF, transparent: true, opacity: 0.8, blending: THREE.AdditiveBlending });
+        const ringMat = new THREE.MeshBasicMaterial({ color: 0x8B5CF6, transparent: true, opacity: 0.8, blending: THREE.AdditiveBlending });
         const ringMesh = new THREE.InstancedMesh(ringGeo, ringMat, hCount);
         const ringDummy = new THREE.Object3D();
         mainGroup.add(ringMesh);
 
         const crossGeo = new THREE.BoxGeometry(0.3, 0.3, 0.3);
-        const crossMat = new THREE.MeshBasicMaterial({ color: 0xff0055, transparent: true, opacity: 0.8, blending: THREE.AdditiveBlending });
+        const crossMat = new THREE.MeshBasicMaterial({ color: 0x2DD4BF, transparent: true, opacity: 0.8, blending: THREE.AdditiveBlending });
         const crossMesh = new THREE.InstancedMesh(crossGeo, crossMat, hCount);
         const crossDummy = new THREE.Object3D();
         mainGroup.add(crossMesh);
@@ -577,9 +584,9 @@
             // Scroll Depth Color Breathing
             const scrollMax = document.body.scrollHeight - window.innerHeight || 1;
             const scrollNorm = Math.min(1.0, scrollY / scrollMax);
-            const colorSilver = new THREE.Color(0xa0aab2);
-            const colorCrimson = new THREE.Color(0xff0055);
-            const colorBlue = new THREE.Color(0x0A84FF);
+            const colorSilver = new THREE.Color(0xF2D0A9); // Premium Champagne Gold
+            const colorCrimson = new THREE.Color(0x8B5CF6); // Ethereal Violet
+            const colorBlue = new THREE.Color(0x2DD4BF); // Cyber Teal
             let currentTheme = new THREE.Color();
             if (scrollNorm < 0.5) {
                 currentTheme.lerpColors(colorSilver, colorCrimson, scrollNorm * 2.0);
