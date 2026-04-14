@@ -361,7 +361,7 @@
         // ── SPLINES (NEURAL THREADS) ──
         const splines = [];
         const splineObjects = []; // Store lines for animation
-        const numSplines = 28; // Increased heavily for dense full page coverage
+        const numSplines = 6; // Reduced to 5-7 covering full page
         
         // Colors for particles (Theme)
         const colors = [
@@ -393,22 +393,23 @@
             curve.closed = false;
             splines.push(curve);
 
-            // Draw Silver line along curve with heavy glow
-            const pointsGeo = new THREE.BufferGeometry().setFromPoints(curve.getPoints(150));
-            const lineMat = new THREE.LineBasicMaterial({ 
+            // Draw volumetric Golden Tube along curve for intense 3D glow
+            const tubeGeo = new THREE.TubeGeometry(curve, 150, 0.35, 6, false);
+            const tubeMat = new THREE.MeshBasicMaterial({ 
                 color: 0xffcc00, // Rich Golden glow
                 transparent: true, 
-                opacity: 0.85,   // Intense glow
-                blending: THREE.AdditiveBlending
+                opacity: 0.18,   // Volumetric intensity
+                blending: THREE.AdditiveBlending,
+                depthWrite: false
             });
-            const splineObject = new THREE.Line(pointsGeo, lineMat);
-            splineObject.userData.basePts = curve.getPoints(150);
+            const splineObject = new THREE.Mesh(tubeGeo, tubeMat);
+            splineObject.userData.basePts = tubeGeo.attributes.position.clone(); // cache for animation
             splineObjects.push(splineObject);
             mainGroup.add(splineObject);
         }
 
         // ── PARTICLES ALONG THREADS ──
-        const particleCount = window.innerWidth > 768 ? 5600 : 2000; // Doubled count
+        const particleCount = window.innerWidth > 768 ? 6000 : 2500; // Hyper dense (1000 per thread)
         const pGeo = new THREE.BufferGeometry();
         const pPos = new Float32Array(particleCount * 3);
         const pColors = new Float32Array(particleCount * 3);
@@ -523,12 +524,17 @@
 
             // Animate Thread Geometries to flow smoothly
             for (let i = 0; i < numSplines; i++) {
-                const lineObj = splineObjects[i];
-                const pos = lineObj.geometry.attributes.position;
-                const pts = lineObj.userData.basePts;
-                for(let j = 0; j < pts.length; j++) {
-                    const waveOffset = Math.sin(time + pts[j].x * 0.05) * 1.5;
-                    pos.setXYZ(j, pts[j].x, pts[j].y + waveOffset, pts[j].z);
+                const tubeObj = splineObjects[i];
+                const pos = tubeObj.geometry.attributes.position;
+                const basePts = tubeObj.userData.basePts; // cached clone
+                
+                for(let j = 0; j < pos.count; j++) {
+                    const x = basePts.getX(j);
+                    const y = basePts.getY(j);
+                    const z = basePts.getZ(j);
+                    
+                    const waveOffset = Math.sin(time + x * 0.05) * 1.5;
+                    pos.setXYZ(j, x, y + waveOffset, z);
                 }
                 pos.needsUpdate = true;
             }
