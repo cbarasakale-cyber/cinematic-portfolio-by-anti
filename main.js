@@ -394,7 +394,7 @@
             splines.push(curve);
 
             // Draw volumetric Golden Tube along curve for intense 3D glow
-            const tubeGeo = new THREE.TubeGeometry(curve, 250, 1.4, 8, false); // Thicker radius, smoother
+            const tubeGeo = new THREE.TubeGeometry(curve, 250, 0.7, 8, false); // Half thickness
             const tubeMat = new THREE.MeshBasicMaterial({ 
                 color: 0xa0aab2, // Steel Silver 
                 transparent: true,
@@ -409,7 +409,7 @@
         }
 
         // ── PARTICLES ALONG THREADS ──
-        const particleCount = window.innerWidth > 768 ? 7500 : 3500; // Hyper dense
+        const particleCount = window.innerWidth > 768 ? 12000 : 5000; // Hyper dense mix
         const pGeo = new THREE.BufferGeometry();
         const pPos = new Float32Array(particleCount * 3);
         const pColors = new Float32Array(particleCount * 3);
@@ -421,13 +421,23 @@
         for (let i = 0; i < particleCount; i++) {
             // Randomly assign to a spline
             const splineIndex = Math.floor(Math.random() * numSplines);
-            const progress = Math.random(); // 0 to 1 along curve
-            const speed = 0.0003 + Math.random() * 0.0007; // Flow speed
+            const progress = Math.random();
+            const speed = 0.0003 + Math.random() * 0.0007;
+            let offsetX, offsetY, offsetZ;
             
-            // Spread particles across the FULL 3D space
-            const offsetX = (Math.random() - 0.5) * 400; // massive spread X
-            const offsetY = (Math.random() - 0.5) * 400; // massive spread Y
-            const offsetZ = (Math.random() - 0.5) * 200; // massive spread Z
+            if (i < particleCount * 0.6) {
+                // 60% Spread particles across the FULL 3D space
+                offsetX = (Math.random() - 0.5) * 400; // massive spread X
+                offsetY = (Math.random() - 0.5) * 400; // massive spread Y
+                offsetZ = (Math.random() - 0.5) * 200; // massive spread Z
+            } else {
+                // 40% Cluster tightly around the threads
+                const rad = Math.random() * 3.5;
+                const theta = Math.random() * Math.PI * 2;
+                offsetX = Math.cos(theta) * rad;
+                offsetY = Math.sin(theta) * rad;
+                offsetZ = (Math.random() - 0.5) * rad * 2;
+            }
 
             pData.push({ splineIndex, progress, speed, offsetX, offsetY, offsetZ });
 
