@@ -340,7 +340,7 @@
     }
 
     /* ═══════════════════════════════════════
-       7. GLOBAL 3D BACKGROUND (THREE.JS)
+       7. GLOBAL 3D BACKGROUND (THREE.JS) - SILVER THREADS
        ═══════════════════════════════════════ */
     function initThreeJSBackground() {
         const canvas = document.getElementById("threeBackground");
@@ -351,7 +351,7 @@
         scene.fog = new THREE.FogExp2(0x0b0b0b, 0.015);
 
         const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-        camera.position.z = 60;
+        camera.position.z = 80;
 
         const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
@@ -360,124 +360,51 @@
         const mainGroup = new THREE.Group();
         scene.add(mainGroup);
 
-        // ── SPLINES (NEURAL THREADS) ──
-        const splines = [];
-        const numSplines = 4;
+        // ── SPLINES (SILVER NEURAL THREADS) ──
+        const numSplines = window.innerWidth > 768 ? 20 : 12; // More threads for density
+        const tubes = [];
         
-        // Colors from theme: #BF5AF2 (Purple), #6C63FF (Blueish), White, Soft Green/Blue
+        // Premium silver/plasma colors
         const colors = [
-            new THREE.Color(0xBF5AF2), 
-            new THREE.Color(0x6C63FF), 
-            new THREE.Color(0xFFFFFF),
-            new THREE.Color(0x0A84FF)
+            new THREE.Color(0xFFFFFF), // Pure White
+            new THREE.Color(0xE0E0E0), // Light Silver
+            new THREE.Color(0xC0C0C0), // Silver
+            new THREE.Color(0xB0C4DE)  // LightSteelBlue (for varied silver tone)
         ];
 
         for (let i = 0; i < numSplines; i++) {
             const points = [];
-            // Generate organic curve points spanning across screen
-            const startX = -100 - Math.random() * 20;
-            const endX = 100 + Math.random() * 20;
-            const steps = 7;
+            // Generate organic curve points spanning a MASSIVE area so it never leaves the viewport
+            const startX = -150 - Math.random() * 50;
+            const endX = 150 + Math.random() * 50;
+            const steps = 8;
             
             for (let j = 0; j <= steps; j++) {
                 const x = startX + ((endX - startX) * (j / steps));
-                // Vary Y and Z organically
-                const y = (Math.random() - 0.5) * 80;
-                // Deeper Z for background layering
-                const z = (Math.random() - 0.5) * 40 - (i * 15); 
+                // Hugely expanded Y and Z for massive volume
+                const y = (Math.random() - 0.5) * 150;
+                const z = (Math.random() - 0.5) * 80 - (i * 5); 
                 points.push(new THREE.Vector3(x, y, z));
             }
 
             const curve = new THREE.CatmullRomCurve3(points);
             curve.closed = false;
-            splines.push(curve);
 
-            // Draw faint line along curve
-            const pointsGeo = new THREE.BufferGeometry().setFromPoints(curve.getPoints(100));
-            const lineMat = new THREE.LineBasicMaterial({ 
-                color: colors[i], 
+            // Draw glowing 3D tube instead of 1px line
+            const tubeGeo = new THREE.TubeGeometry(curve, 100, 0.2 + (Math.random() * 0.2), 4, false);
+            const tubeMat = new THREE.MeshBasicMaterial({ 
+                color: colors[i % colors.length], 
                 transparent: true, 
-                opacity: 0.1,
-                blending: THREE.AdditiveBlending
+                opacity: 0.15 + (Math.random() * 0.1),
+                blending: THREE.AdditiveBlending,
+                depthWrite: false
             });
-            const splineObject = new THREE.Line(pointsGeo, lineMat);
-            mainGroup.add(splineObject);
-        }
-
-        // ── PARTICLES ALONG THREADS ──
-        const particleCount = window.innerWidth > 768 ? 900 : 400; // Optimize for mobile
-        const pGeo = new THREE.BufferGeometry();
-        const pPos = new Float32Array(particleCount * 3);
-        const pColors = new Float32Array(particleCount * 3);
-        const pSizes = new Float32Array(particleCount);
-        
-        // Custom data array to animate particles
-        const pData = [];
-
-        for (let i = 0; i < particleCount; i++) {
-            // Randomly assign to a spline
-            const splineIndex = Math.floor(Math.random() * numSplines);
-            const progress = Math.random(); // 0 to 1 along curve
-            const speed = 0.0004 + Math.random() * 0.0008; // Flow speed
+            const tubeMesh = new THREE.Mesh(tubeGeo, tubeMat);
             
-            // Random offset from core spline (for organic thick effect)
-            const radius = Math.random() * 2.5;
-            const theta = Math.random() * Math.PI * 2;
-            const offsetX = Math.cos(theta) * radius;
-            const offsetY = Math.sin(theta) * radius;
-            const offsetZ = (Math.random() - 0.5) * radius * 2;
-
-            pData.push({ splineIndex, progress, speed, offsetX, offsetY, offsetZ });
-
-            const baseColor = colors[splineIndex];
-            pColors[i * 3]     = baseColor.r;
-            pColors[i * 3 + 1] = baseColor.g;
-            pColors[i * 3 + 2] = baseColor.b;
-
-            // Size variance
-            pSizes[i] = Math.random() * 2.5 + 1.0;
+            // Store reference for animation (breathing effect)
+            tubes.push({ mesh: tubeMesh, speed: Math.random() * 0.02 + 0.01, baseOpacity: tubeMat.opacity });
+            mainGroup.add(tubeMesh);
         }
-
-        pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
-        pGeo.setAttribute('color', new THREE.BufferAttribute(pColors, 3));
-        pGeo.setAttribute('size', new THREE.BufferAttribute(pSizes, 1));
-
-        // Premium Soft-Glow Shader for Particles
-        const pMat = new THREE.ShaderMaterial({
-            uniforms: {
-                time: { value: 0 }
-            },
-            vertexShader: `
-                attribute float size;
-                attribute vec3 color;
-                varying vec3 vColor;
-                uniform float time;
-                void main() {
-                    vColor = color;
-                    vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
-                    // Pulsing size based on time and unique particle size
-                    float pulse = 1.0 + sin(time * 2.0 + size * 10.0) * 0.4;
-                    gl_PointSize = size * pulse * (100.0 / -mvPosition.z);
-                    gl_Position = projectionMatrix * mvPosition;
-                }
-            `,
-            fragmentShader: `
-                varying vec3 vColor;
-                void main() {
-                    // Soft circular glow falloff
-                    float dist = length(gl_PointCoord - vec2(0.5));
-                    if (dist > 0.5) discard;
-                    float alpha = pow((0.5 - dist) * 2.0, 1.5); // Smoother falloff
-                    gl_FragColor = vec4(vColor, alpha * 0.9);
-                }
-            `,
-            transparent: true,
-            blending: THREE.AdditiveBlending,
-            depthWrite: false
-        });
-
-        const particleSystem = new THREE.Points(pGeo, pMat);
-        mainGroup.add(particleSystem);
 
         // ── INTERACTION STATE ──
         let mouseX = 0;
@@ -495,45 +422,26 @@
 
         // ── ANIMATION LOOP ──
         let time = 0;
-        const posAttr = pGeo.attributes.position;
 
         function animate() {
             requestAnimationFrame(animate);
-            time += 0.01;
-            pMat.uniforms.time.value = time;
+            time += 0.02;
 
             // Smoothly Lerp group rotation for mouse follow
-            targetX = mouseX * 0.0003;
-            targetY = mouseY * 0.0003;
+            targetX = mouseX * 0.0002;
+            targetY = mouseY * 0.0002;
             
             mainGroup.rotation.y += (targetX - mainGroup.rotation.y) * 0.05;
             mainGroup.rotation.x += (targetY - mainGroup.rotation.x) * 0.05;
 
-            // Scroll parallax depth effect
+            // Scroll parallax depth effect (Rotation ONLY to prevent moving out of bounds)
             const scrollY = window.scrollY || document.documentElement.scrollTop;
-            mainGroup.position.y = scrollY * 0.025; // Shift up 
-            mainGroup.rotation.z = -scrollY * 0.00015; // Slight twist over scroll
+            mainGroup.rotation.z = -scrollY * 0.0002;
 
-            // Update particles along splines
-            for (let i = 0; i < particleCount; i++) {
-                const data = pData[i];
-                data.progress += data.speed;
-                if (data.progress > 1) data.progress = 0; // Loop curve
-
-                const spline = splines[data.splineIndex];
-                const pt = spline.getPointAt(data.progress);
-
-                // Subtle undulation offset
-                const waveOffset = Math.sin(time + pt.x * 0.05) * 1.5;
-
-                posAttr.setXYZ(
-                    i, 
-                    pt.x + data.offsetX, 
-                    pt.y + data.offsetY + waveOffset, 
-                    pt.z + data.offsetZ
-                );
-            }
-            posAttr.needsUpdate = true;
+            // Animate Tube Opsacity for pulsing "flowing" effect
+            tubes.forEach((t, i) => {
+                t.mesh.material.opacity = t.baseOpacity + (Math.sin(time * t.speed + i) * 0.08);
+            });
 
             renderer.render(scene, camera);
         }
