@@ -145,7 +145,7 @@
         initNavbar();
         initMobileMenu();
         initHeroAnimations();
-        initHeroParticles();
+        initThreeJSBackground();
         initShowreelAnimations(); 
         initThumbnails(); 
         initScrollAnimations();
@@ -340,134 +340,212 @@
     }
 
     /* ═══════════════════════════════════════
-       7. HERO PARTICLES (Canvas)
+       7. GLOBAL 3D BACKGROUND (THREE.JS)
        ═══════════════════════════════════════ */
-    function initHeroParticles() {
-        const canvas = document.getElementById("heroParticles");
-        if (!canvas) return;
+    function initThreeJSBackground() {
+        const canvas = document.getElementById("threeBackground");
+        if (!canvas || typeof THREE === "undefined") return;
 
-        const ctx = canvas.getContext("2d");
-        let w, h;
-        const particles = [];
-        const PARTICLE_COUNT = 80;
-        let mouse = { x: -1000, y: -1000 };
+        const scene = new THREE.Scene();
+        // Fog for depth (dark space)
+        scene.fog = new THREE.FogExp2(0x0b0b0b, 0.015);
 
-        function resize() {
-            w = canvas.width = canvas.offsetWidth;
-            h = canvas.height = canvas.offsetHeight;
-        }
-        resize();
-        window.addEventListener("resize", resize);
+        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.z = 60;
 
-        // Track mouse position within hero
-        const hero = document.querySelector(".hero");
-        hero.addEventListener("mousemove", (e) => {
-            const rect = canvas.getBoundingClientRect();
-            mouse.x = e.clientX - rect.left;
-            mouse.y = e.clientY - rect.top;
+        const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-            // Subtle Parallax Canvas Shift
-            const centerX = window.innerWidth / 2;
-            const centerY = window.innerHeight / 2;
-            const moveX = (e.clientX - centerX) * 0.015; // Max ~15px
-            const moveY = (e.clientY - centerY) * 0.015;
+        const mainGroup = new THREE.Group();
+        scene.add(mainGroup);
 
-            gsap.to(canvas, {
-                x: moveX,
-                y: moveY,
-                duration: 1.2,
-                ease: "power2.out"
-            });
-        });
-        hero.addEventListener("mouseleave", () => {
-            mouse.x = -1000;
-            mouse.y = -1000;
-            gsap.to(canvas, { x: 0, y: 0, duration: 1.5, ease: "power2.out" });
-        });
+        // ── SPLINES (NEURAL THREADS) ──
+        const splines = [];
+        const numSplines = 4;
+        
+        // Colors from theme: #BF5AF2 (Purple), #6C63FF (Blueish), White, Soft Green/Blue
+        const colors = [
+            new THREE.Color(0xBF5AF2), 
+            new THREE.Color(0x6C63FF), 
+            new THREE.Color(0xFFFFFF),
+            new THREE.Color(0x0A84FF)
+        ];
 
-        // Create particles
-        for (let i = 0; i < PARTICLE_COUNT; i++) {
-            particles.push({
-                x: Math.random() * w,
-                y: Math.random() * h,
-                r: Math.random() * 2.5 + 0.5,
-                vx: (Math.random() - 0.5) * 0.4,
-                vy: (Math.random() - 0.5) * 0.4,
-                alpha: Math.random() * 0.4 + 0.1,
-                color: Math.random() > 0.5
-                    ? `108, 99, 255`   // accent blue
-                    : `191, 90, 242`,  // accent purple
-            });
-        }
-
-        function draw() {
-            ctx.clearRect(0, 0, w, h);
-
-            particles.forEach((p) => {
-                // Subtle mouse repulsion (Dodge)
-                const dx = p.x - mouse.x;
-                const dy = p.y - mouse.y;
-                const dist = Math.sqrt(dx * dx + dy * dy);
-                
-                if (dist < 150) {
-                    const force = (150 - dist) / 150;
-                    const strength = 0.45; // Subtle but noticeable
-                    p.vx += (dx / dist) * force * strength;
-                    p.vy += (dy / dist) * force * strength;
-                    
-                    // "Grab" Effect - Draw connecting line to mouse
-                    if (dist < 100) {
-                        ctx.beginPath();
-                        ctx.moveTo(p.x, p.y);
-                        ctx.lineTo(mouse.x, mouse.y);
-                        ctx.strokeStyle = `rgba(108, 99, 255, ${0.15 * (1 - dist/100)})`;
-                        ctx.lineWidth = 0.3;
-                        ctx.stroke();
-                    }
-                }
-
-                // Smooth slow down (Premium Friction)
-                p.vx *= 0.96; 
-                p.vy *= 0.96;
-
-                p.x += p.vx + (Math.random() - 0.5) * 0.15; // Natural jitter
-                p.y += p.vy + (Math.random() - 0.5) * 0.15;
-
-                // Wrap around edges with buffer
-                const buffer = 20;
-                if (p.x < -buffer) p.x = w + buffer;
-                if (p.x > w + buffer) p.x = -buffer;
-                if (p.y < -buffer) p.y = h + buffer;
-                if (p.y > h + buffer) p.y = -buffer;
-
-                // Draw Particle
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(${p.color}, ${p.alpha})`;
-                ctx.fill();
-            });
-
-            // Draw connections between particles
-            for (let i = 0; i < particles.length; i++) {
-                for (let j = i + 1; j < particles.length; j++) {
-                    const dx = particles[i].x - particles[j].x;
-                    const dy = particles[i].y - particles[j].y;
-                    const dist = Math.sqrt(dx * dx + dy * dy);
-                    if (dist < 110) {
-                        ctx.beginPath();
-                        ctx.moveTo(particles[i].x, particles[i].y);
-                        ctx.lineTo(particles[j].x, particles[j].y);
-                        const alpha = (1 - dist / 110) * 0.1;
-                        ctx.strokeStyle = `rgba(108, 99, 255, ${alpha})`;
-                        ctx.lineWidth = 0.5;
-                        ctx.stroke();
-                    }
-                }
+        for (let i = 0; i < numSplines; i++) {
+            const points = [];
+            // Generate organic curve points spanning across screen
+            const startX = -100 - Math.random() * 20;
+            const endX = 100 + Math.random() * 20;
+            const steps = 7;
+            
+            for (let j = 0; j <= steps; j++) {
+                const x = startX + ((endX - startX) * (j / steps));
+                // Vary Y and Z organically
+                const y = (Math.random() - 0.5) * 80;
+                // Deeper Z for background layering
+                const z = (Math.random() - 0.5) * 40 - (i * 15); 
+                points.push(new THREE.Vector3(x, y, z));
             }
 
-            requestAnimationFrame(draw);
+            const curve = new THREE.CatmullRomCurve3(points);
+            curve.closed = false;
+            splines.push(curve);
+
+            // Draw faint line along curve
+            const pointsGeo = new THREE.BufferGeometry().setFromPoints(curve.getPoints(100));
+            const lineMat = new THREE.LineBasicMaterial({ 
+                color: colors[i], 
+                transparent: true, 
+                opacity: 0.1,
+                blending: THREE.AdditiveBlending
+            });
+            const splineObject = new THREE.Line(pointsGeo, lineMat);
+            mainGroup.add(splineObject);
         }
-        draw();
+
+        // ── PARTICLES ALONG THREADS ──
+        const particleCount = window.innerWidth > 768 ? 900 : 400; // Optimize for mobile
+        const pGeo = new THREE.BufferGeometry();
+        const pPos = new Float32Array(particleCount * 3);
+        const pColors = new Float32Array(particleCount * 3);
+        const pSizes = new Float32Array(particleCount);
+        
+        // Custom data array to animate particles
+        const pData = [];
+
+        for (let i = 0; i < particleCount; i++) {
+            // Randomly assign to a spline
+            const splineIndex = Math.floor(Math.random() * numSplines);
+            const progress = Math.random(); // 0 to 1 along curve
+            const speed = 0.0004 + Math.random() * 0.0008; // Flow speed
+            
+            // Random offset from core spline (for organic thick effect)
+            const radius = Math.random() * 2.5;
+            const theta = Math.random() * Math.PI * 2;
+            const offsetX = Math.cos(theta) * radius;
+            const offsetY = Math.sin(theta) * radius;
+            const offsetZ = (Math.random() - 0.5) * radius * 2;
+
+            pData.push({ splineIndex, progress, speed, offsetX, offsetY, offsetZ });
+
+            const baseColor = colors[splineIndex];
+            pColors[i * 3]     = baseColor.r;
+            pColors[i * 3 + 1] = baseColor.g;
+            pColors[i * 3 + 2] = baseColor.b;
+
+            // Size variance
+            pSizes[i] = Math.random() * 2.5 + 1.0;
+        }
+
+        pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
+        pGeo.setAttribute('color', new THREE.BufferAttribute(pColors, 3));
+        pGeo.setAttribute('size', new THREE.BufferAttribute(pSizes, 1));
+
+        // Premium Soft-Glow Shader for Particles
+        const pMat = new THREE.ShaderMaterial({
+            uniforms: {
+                time: { value: 0 }
+            },
+            vertexShader: `
+                attribute float size;
+                attribute vec3 color;
+                varying vec3 vColor;
+                uniform float time;
+                void main() {
+                    vColor = color;
+                    vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+                    // Pulsing size based on time and unique particle size
+                    float pulse = 1.0 + sin(time * 2.0 + size * 10.0) * 0.4;
+                    gl_PointSize = size * pulse * (100.0 / -mvPosition.z);
+                    gl_Position = projectionMatrix * mvPosition;
+                }
+            `,
+            fragmentShader: `
+                varying vec3 vColor;
+                void main() {
+                    // Soft circular glow falloff
+                    float dist = length(gl_PointCoord - vec2(0.5));
+                    if (dist > 0.5) discard;
+                    float alpha = pow((0.5 - dist) * 2.0, 1.5); // Smoother falloff
+                    gl_FragColor = vec4(vColor, alpha * 0.9);
+                }
+            `,
+            transparent: true,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false
+        });
+
+        const particleSystem = new THREE.Points(pGeo, pMat);
+        mainGroup.add(particleSystem);
+
+        // ── INTERACTION STATE ──
+        let mouseX = 0;
+        let mouseY = 0;
+        let targetX = 0;
+        let targetY = 0;
+
+        const windowHalfX = window.innerWidth / 2;
+        const windowHalfY = window.innerHeight / 2;
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = (e.clientX - windowHalfX);
+            mouseY = (e.clientY - windowHalfY);
+        });
+
+        // ── ANIMATION LOOP ──
+        let time = 0;
+        const posAttr = pGeo.attributes.position;
+
+        function animate() {
+            requestAnimationFrame(animate);
+            time += 0.01;
+            pMat.uniforms.time.value = time;
+
+            // Smoothly Lerp group rotation for mouse follow
+            targetX = mouseX * 0.0003;
+            targetY = mouseY * 0.0003;
+            
+            mainGroup.rotation.y += (targetX - mainGroup.rotation.y) * 0.05;
+            mainGroup.rotation.x += (targetY - mainGroup.rotation.x) * 0.05;
+
+            // Scroll parallax depth effect
+            const scrollY = window.scrollY || document.documentElement.scrollTop;
+            mainGroup.position.y = scrollY * 0.025; // Shift up 
+            mainGroup.rotation.z = -scrollY * 0.00015; // Slight twist over scroll
+
+            // Update particles along splines
+            for (let i = 0; i < particleCount; i++) {
+                const data = pData[i];
+                data.progress += data.speed;
+                if (data.progress > 1) data.progress = 0; // Loop curve
+
+                const spline = splines[data.splineIndex];
+                const pt = spline.getPointAt(data.progress);
+
+                // Subtle undulation offset
+                const waveOffset = Math.sin(time + pt.x * 0.05) * 1.5;
+
+                posAttr.setXYZ(
+                    i, 
+                    pt.x + data.offsetX, 
+                    pt.y + data.offsetY + waveOffset, 
+                    pt.z + data.offsetZ
+                );
+            }
+            posAttr.needsUpdate = true;
+
+            renderer.render(scene, camera);
+        }
+
+        animate();
+
+        // ── RESIZE HANDLING ──
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
     }
 
     /* ═══════════════════════════════════════

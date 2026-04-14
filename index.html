@@ -19,12 +19,20 @@
     <!-- CSS -->
     <link rel="stylesheet" href="style.css">
 
+    <!-- Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" defer></script>
+    
     <!-- GSAP -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
     <script src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js" defer></script>
 </head>
 <body>
+    <!-- ═══════════════════════════════════════
+         0. GLOBAL 3D BACKGROUND
+         ═══════════════════════════════════════ -->
+    <canvas id="threeBackground" class="three-bg"></canvas>
+
 
     <!-- ═══════════════════════════════════════
          1. CINEMATIC INTRO LOADER — Design Cover
@@ -183,9 +191,6 @@
         <div class="hero-overlay-dark"></div>
         <div class="hero-overlay-gradient"></div>
         <div class="hero-overlay-noise"></div>
-        
-        <!-- Particle Canvas -->
-        <canvas id="heroParticles" class="hero-particles"></canvas>
 
         <!-- Hero Content -->
         <div class="hero-content" id="heroContent">

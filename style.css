@@ -29,6 +29,7 @@
 }
 
 html {
+    background: var(--bg);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
@@ -40,7 +41,7 @@ html.lenis, html.lenis body { height: auto; }
 .lenis.lenis-scrolling iframe { pointer-events: none; }
 
 body {
-    background: var(--bg);
+    background: transparent;
     color: var(--text);
     font-family: var(--font);
     line-height: 1.6;
@@ -568,7 +569,7 @@ img { display: block; max-width: 100%; }
     position: absolute;
     inset: 0;
     z-index: 1;
-    background: rgba(11, 11, 11, 0.7);
+    background: rgba(11, 11, 11, 0.4); /* Thinner dark overlay */
 }
 
 .hero-overlay-gradient {
@@ -590,10 +591,16 @@ img { display: block; max-width: 100%; }
     mix-blend-mode: overlay;
 }
 
-.hero-particles {
-    position: absolute;
-    inset: -5%;
-    z-index: 4;
+/* ═══════════════════════════════════════
+   0. GLOBAL 3D BACKGROUND
+   ═══════════════════════════════════════ */
+.three-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
     pointer-events: none;
 }
 
@@ -767,7 +774,7 @@ img { display: block; max-width: 100%; }
    SHOWREEL / WORK (SPLIT VERTICAL)
    ═══════════════════════════════════════ */
 .showreel-split-wrapper {
-    background: var(--bg);
+    background: transparent;
     overflow: hidden;
     position: relative;
     padding-bottom: 8rem;
@@ -1159,7 +1166,7 @@ img { display: block; max-width: 100%; }
    EXPERIENCE / TIMELINE
    ═══════════════════════════════════════ */
 .experience {
-    background: var(--bg);
+    background: transparent;
 }
 
 .timeline {
@@ -1297,7 +1304,7 @@ img { display: block; max-width: 100%; }
    ABOUT
    ═══════════════════════════════════════ */
 .about {
-    background: linear-gradient(180deg, var(--bg) 0%, var(--bg-alt) 100%);
+    background: linear-gradient(180deg, transparent 0%, rgba(17, 17, 17, 0.8) 100%);
 }
 
 .about-grid {
@@ -1582,7 +1589,7 @@ img { display: block; max-width: 100%; }
    ═══════════════════════════════════════ */
 .graphic-design {
     position: relative;
-    background: #111111;
+    background: transparent;
     overflow: hidden;
     isolation: isolate;
 }
