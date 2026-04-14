@@ -448,6 +448,16 @@
             });
         }
 
+        // ── NEURAL ARCS (LIGHTNING) ──
+        const arcCount = window.innerWidth > 768 ? 60 : 30; // Fewer arcs for a cleaner look
+        const arcGeo = new THREE.BufferGeometry();
+        const arcPos = new Float32Array(arcCount * 2 * 3);
+        arcGeo.setAttribute('position', new THREE.BufferAttribute(arcPos, 3));
+        const arcMat = new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.15, blending: THREE.AdditiveBlending });
+        const arcMesh = new THREE.LineSegments(arcGeo, arcMat);
+        mainGroup.add(arcMesh);
+        const arcPairs = Array.from({length: arcCount}, () => ({a: 0, b: 0}));
+
         // ── SHOCKWAVE STATE ──
         const shockwave = { active: false, x: 0, y: 0, radius: 0 };
         document.addEventListener('click', (e) => {
@@ -601,6 +611,17 @@
                 if (shockwave.radius > 150) shockwave.active = false;
             }
 
+            // High-Voltage Flashing Neural Arcs
+            if (Math.floor(time * 100) % 5 === 0) {
+                for(let i=0; i<arcCount; i++) {
+                    const startIdx = Math.floor(particleCount * 0.6); // tight cluster boundary
+                    let a = startIdx + Math.floor(Math.random() * (particleCount * 0.4));
+                    let b = a + Math.floor(Math.random() * 10) + 1; // Extremely close neighbors only
+                    if (b >= particleCount) b = a - 2;
+                    arcPairs[i] = {a, b};
+                }
+            }
+
             // Approximate Mouse to world mapping
             const worldMouseX = (mouseX / windowHalfX) * 45;
             const worldMouseY = -(mouseY / windowHalfY) * 30 - mainGroup.position.y;
@@ -686,6 +707,21 @@
                 );
             }
             posAttr.needsUpdate = true;
+
+            // Render High-Voltage Neural Arcs
+            const arcPosArr = arcMesh.geometry.attributes.position.array;
+            for(let i=0; i<arcCount; i++) {
+                const pA = arcPairs[i].a * 3;
+                const pB = arcPairs[i].b * 3;
+                
+                arcPosArr[i*6 + 0] = posAttr.array[pA + 0];
+                arcPosArr[i*6 + 1] = posAttr.array[pA + 1];
+                arcPosArr[i*6 + 2] = posAttr.array[pA + 2];
+                arcPosArr[i*6 + 3] = posAttr.array[pB + 0];
+                arcPosArr[i*6 + 4] = posAttr.array[pB + 1];
+                arcPosArr[i*6 + 5] = posAttr.array[pB + 2];
+            }
+            arcMesh.geometry.attributes.position.needsUpdate = true;
 
             // Render Holographic Data Swarm Layer
             for(let i=0; i<hCount*2; i++) {
