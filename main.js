@@ -574,14 +574,17 @@
             // Scroll Depth Color Breathing
             const scrollMax = document.body.scrollHeight - window.innerHeight || 1;
             const scrollNorm = Math.min(1.0, scrollY / scrollMax);
-            const colorSilver = new THREE.Color(0x00f3ff); // Neon Cyan
-            const colorCrimson = new THREE.Color(0xff007f); // Hyper Pink
-            const colorBlue = new THREE.Color(0xbc13fe); // Neon Violet
+            const cTop = new THREE.Color(0x00f3ff);    // Neon Cyan
+            const cMid1 = new THREE.Color(0xff007f);   // Hyper Pink
+            const cMid2 = new THREE.Color(0xb026ff);   // Intense Neon Purple
+            const cBot = new THREE.Color(0xbc13fe);    // Neon Violet
             let currentTheme = new THREE.Color();
-            if (scrollNorm < 0.5) {
-                currentTheme.lerpColors(colorSilver, colorCrimson, scrollNorm * 2.0);
+            if (scrollNorm < 0.33) {
+                currentTheme.lerpColors(cTop, cMid1, scrollNorm * 3.0);
+            } else if (scrollNorm < 0.66) {
+                currentTheme.lerpColors(cMid1, cMid2, (scrollNorm - 0.33) * 3.0);
             } else {
-                currentTheme.lerpColors(colorCrimson, colorBlue, (scrollNorm - 0.5) * 2.0);
+                currentTheme.lerpColors(cMid2, cBot, (scrollNorm - 0.66) * 3.0);
             }
             pMat.uniforms.globalTheme.value.copy(currentTheme);
             for(let i=0; i<numSplines; i++) {
