@@ -396,7 +396,7 @@
             // Draw volumetric Golden Tube along curve for intense 3D glow
             const tubeGeo = new THREE.TubeGeometry(curve, 250, 1.4, 8, false); // Thicker radius, smoother
             const tubeMat = new THREE.MeshBasicMaterial({ 
-                color: 0xffcc00, // Definitively Golden 
+                color: 0xa0aab2, // Steel Silver 
                 transparent: true,
                 opacity: 0.8, // Massive glow value
                 blending: THREE.AdditiveBlending,
@@ -424,12 +424,10 @@
             const progress = Math.random(); // 0 to 1 along curve
             const speed = 0.0003 + Math.random() * 0.0007; // Flow speed
             
-            // Random offset from core spline (for organic thick effect)
-            const radius = Math.random() * 2.5;
-            const theta = Math.random() * Math.PI * 2;
-            const offsetX = Math.cos(theta) * radius;
-            const offsetY = Math.sin(theta) * radius;
-            const offsetZ = (Math.random() - 0.5) * radius * 2;
+            // Spread particles across the FULL 3D space
+            const offsetX = (Math.random() - 0.5) * 400; // massive spread X
+            const offsetY = (Math.random() - 0.5) * 400; // massive spread Y
+            const offsetZ = (Math.random() - 0.5) * 200; // massive spread Z
 
             pData.push({ splineIndex, progress, speed, offsetX, offsetY, offsetZ });
 
