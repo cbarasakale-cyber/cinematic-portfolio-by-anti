@@ -1476,19 +1476,30 @@
     function initImageLightbox() {
         const lightbox = document.getElementById("imgLightbox");
         const lightboxImg = document.getElementById("imgLightboxImg");
+        const pdfIframe = document.getElementById("pdfLightboxIframe");
         const closeBtn = document.getElementById("imgLightboxClose");
 
         if (!lightbox || !lightboxImg || !closeBtn) return;
 
         // Click on any GD card -> open lightbox
-        document.querySelectorAll(".gd-card[data-fullimg]").forEach((card) => {
+        document.querySelectorAll(".gd-card[data-fullimg], .gd-card[data-pdf]").forEach((card) => {
             card.addEventListener("click", () => {
                 const imgUrl = card.getAttribute("data-fullimg");
-                if (!imgUrl) return;
+                const pdfUrl = card.getAttribute("data-pdf");
 
-                lightboxImg.src = imgUrl;
+                if (pdfUrl && pdfIframe) {
+                    lightboxImg.style.display = "none";
+                    pdfIframe.style.display = "block";
+                    pdfIframe.src = pdfUrl;
+                } else if (imgUrl) {
+                    if (pdfIframe) pdfIframe.style.display = "none";
+                    lightboxImg.style.display = "block";
+                    lightboxImg.src = imgUrl;
+                } else {
+                    return;
+                }
+
                 lightbox.classList.add("active");
-
                 if (lenis) lenis.stop();
             });
         });
@@ -1497,6 +1508,10 @@
             lightbox.classList.remove("active");
             setTimeout(() => {
                 lightboxImg.src = "";
+                if (pdfIframe) {
+                    pdfIframe.src = "";
+                    pdfIframe.style.display = "none";
+                }
                 if (lenis) lenis.start();
             }, 400);
         }

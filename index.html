@@ -428,13 +428,13 @@
                     <span class="gd-cat-name">Visiting Cards</span>
                 </div>
                 <div class="gd-grid gd-grid-vcards">
-                    <div class="gd-card gd-card-vcard" data-fullimg="https://lh3.googleusercontent.com/d/17swUSCSA36MDP8j-QOoPox6Jig1LRsXD">
+                    <div class="gd-card gd-card-vcard" data-pdf="https://drive.google.com/file/d/17swUSCSA36MDP8j-QOoPox6Jig1LRsXD/preview">
                         <div class="gd-card-inner gd-vcard-3d">
-                            <!-- Note: If this is a PDF, a thumbnail should be used here -->
-                            <img src="https://lh3.googleusercontent.com/d/17swUSCSA36MDP8j-QOoPox6Jig1LRsXD" alt="Visiting Card Design 1" class="gd-vcard-img" loading="lazy">
+                            <!-- Note: The thumbnail fetches page 1, clicking opens the full PDF viewer for both pages -->
+                            <img src="https://lh3.googleusercontent.com/d/17swUSCSA36MDP8j-QOoPox6Jig1LRsXD" alt="Visiting Card Multi-Page" class="gd-vcard-img" loading="lazy">
                             <div class="gd-vcard-reflection"></div>
                         </div>
-                        <span class="gd-vcard-label">Design 1</span>
+                        <span class="gd-vcard-label">View PDF (Front & Back)</span>
                     </div>
                     <div class="gd-card gd-card-vcard" data-fullimg="https://lh3.googleusercontent.com/d/1TtezcIdl8slExalCifKWcS9UnQ7iHq--">
                         <div class="gd-card-inner gd-vcard-3d">
@@ -449,7 +449,7 @@
     </section>
 
     <!-- ═══════════════════════════════════════
-         IMAGE LIGHTBOX MODAL
+         IMAGE & PDF LIGHTBOX MODAL
          ═══════════════════════════════════════ -->
     <div class="img-lightbox" id="imgLightbox">
         <button class="img-lightbox-close" id="imgLightboxClose" aria-label="Close image">
@@ -459,6 +459,7 @@
             </svg>
         </button>
         <img id="imgLightboxImg" src="" alt="Full resolution preview">
+        <iframe id="pdfLightboxIframe" src="" style="display:none; width: 85vw; height: 85vh; border:none; border-radius: 12px; box-shadow: 0 0 80px rgba(108, 99, 255, 0.15);"></iframe>
     </div>
 
     <!-- ═══════════════════════════════════════

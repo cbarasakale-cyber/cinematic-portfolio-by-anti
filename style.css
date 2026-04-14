@@ -1523,6 +1523,17 @@ img { display: block; max-width: 100%; }
     position: relative;
     overflow: hidden;
     cursor: default;
+    transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.work-with-me-title:hover {
+    border-color: rgba(255,255,255,0.3);
+    background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.02));
+    box-shadow: 
+        0 40px 80px rgba(0,0,0,0.6),
+        inset 0 1px 0 rgba(255,255,255,0.4),
+        0 0 40px rgba(108, 99, 255, 0.1);
+    transform: translateY(-5px) scale(1.05);
 }
 
 .work-with-me-title::before {
