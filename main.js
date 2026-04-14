@@ -408,8 +408,58 @@
             mainGroup.add(splineObject);
         }
 
+        // ── HOLOGRAPHIC DATA SWARM (MATRIX) ──
+        const hCount = 200;
+        const ringGeo = new THREE.TorusGeometry(0.8, 0.1, 4, 16);
+        const ringMat = new THREE.MeshBasicMaterial({ color: 0x0A84FF, transparent: true, opacity: 0.8, blending: THREE.AdditiveBlending });
+        const ringMesh = new THREE.InstancedMesh(ringGeo, ringMat, hCount);
+        const ringDummy = new THREE.Object3D();
+        mainGroup.add(ringMesh);
+
+        const crossGeo = new THREE.BoxGeometry(0.3, 0.3, 0.3);
+        const crossMat = new THREE.MeshBasicMaterial({ color: 0xff0055, transparent: true, opacity: 0.8, blending: THREE.AdditiveBlending });
+        const crossMesh = new THREE.InstancedMesh(crossGeo, crossMat, hCount);
+        const crossDummy = new THREE.Object3D();
+        mainGroup.add(crossMesh);
+
+        const hData = [];
+        for(let i=0; i<hCount*2; i++) {
+            hData.push({
+                isRing: i < hCount,
+                index: i % hCount,
+                splineIndex: Math.floor(Math.random() * numSplines),
+                progress: Math.random(),
+                speed: 0.0003 + Math.random() * 0.0007,
+                offsetX: (Math.random()-0.5)*15,
+                offsetY: (Math.random()-0.5)*15,
+                offsetZ: (Math.random()-0.5)*15,
+                rotX: Math.random() * Math.PI,
+                rotY: Math.random() * Math.PI,
+                rotSpeed: (Math.random()-0.5)*0.1
+            });
+        }
+
+        // ── NEURAL ARCS (LIGHTNING) ──
+        const arcCount = 100;
+        const arcGeo = new THREE.BufferGeometry();
+        const arcPos = new Float32Array(arcCount * 2 * 3);
+        arcGeo.setAttribute('position', new THREE.BufferAttribute(arcPos, 3));
+        const arcMat = new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.8, blending: THREE.AdditiveBlending });
+        const arcMesh = new THREE.LineSegments(arcGeo, arcMat);
+        mainGroup.add(arcMesh);
+        const arcPairs = Array.from({length: arcCount}, () => ({a: 0, b: 0}));
+
+        // ── SHOCKWAVE STATE ──
+        const shockwave = { active: false, x: 0, y: 0, radius: 0 };
+        document.addEventListener('click', (e) => {
+            shockwave.active = true;
+            shockwave.radius = 0;
+            shockwave.x = ((e.clientX - window.innerWidth/2) / (window.innerWidth/2)) * 45;
+            shockwave.y = -((e.clientY - window.innerHeight/2) / (window.innerHeight/2)) * 30 - mainGroup.position.y;
+        });
+
         // ── PARTICLES ALONG THREADS ──
-        const particleCount = window.innerWidth > 768 ? 12000 : 5000; // Hyper dense mix
+        const particleCount = window.innerWidth > 768 ? 8000 : 4000; // Scaled down for safe massive VFX overhead
         const pGeo = new THREE.BufferGeometry();
         const pPos = new Float32Array(particleCount * 3);
         const pColors = new Float32Array(particleCount * 3);
@@ -457,7 +507,8 @@
         // Premium Soft-Glow Shader for Particles
         const pMat = new THREE.ShaderMaterial({
             uniforms: {
-                time: { value: 0 }
+                time: { value: 0 },
+                globalTheme: { value: new THREE.Color(0xa0aab2) }
             },
             vertexShader: `
                 attribute float size;
@@ -475,12 +526,13 @@
             `,
             fragmentShader: `
                 varying vec3 vColor;
+                uniform vec3 globalTheme;
                 void main() {
                     // Soft circular glow falloff
                     float dist = length(gl_PointCoord - vec2(0.5));
                     if (dist > 0.5) discard;
                     float alpha = pow((0.5 - dist) * 2.0, 1.5); // Smoother falloff
-                    gl_FragColor = vec4(vColor, alpha * 2.0); // Doubled Intensity
+                    gl_FragColor = vec4(vColor * globalTheme * 2.0, alpha * 2.0); // Dynamic Color Tinted
                 }
             `,
             transparent: true,
@@ -517,10 +569,45 @@
             // (Global mouse tracking rotation disabled to focus on individual particle physics)
 
 
-            // Scroll parallax depth effect
+            // Scroll Parallax
             const scrollY = window.scrollY || document.documentElement.scrollTop;
             mainGroup.position.y = scrollY * 0.025; // Shift up 
             mainGroup.rotation.z = -scrollY * 0.00015; // Slight twist over scroll
+
+            // Scroll Depth Color Breathing
+            const scrollMax = document.body.scrollHeight - window.innerHeight || 1;
+            const scrollNorm = Math.min(1.0, scrollY / scrollMax);
+            const colorSilver = new THREE.Color(0xa0aab2);
+            const colorCrimson = new THREE.Color(0xff0055);
+            const colorBlue = new THREE.Color(0x0A84FF);
+            let currentTheme = new THREE.Color();
+            if (scrollNorm < 0.5) {
+                currentTheme.lerpColors(colorSilver, colorCrimson, scrollNorm * 2.0);
+            } else {
+                currentTheme.lerpColors(colorCrimson, colorBlue, (scrollNorm - 0.5) * 2.0);
+            }
+            pMat.uniforms.globalTheme.value.copy(currentTheme);
+            for(let i=0; i<numSplines; i++) {
+                splineObjects[i].material.color.copy(currentTheme);
+            }
+            arcMat.color.copy(currentTheme);
+
+            // Update Shockwave
+            if (shockwave.active) {
+                shockwave.radius += 2.0; // Expand rapidly
+                if (shockwave.radius > 150) shockwave.active = false;
+            }
+
+            // Randomize Lightning Arc Connections
+            if (Math.floor(time * 100) % 10 === 0) {
+                for(let i=0; i<arcCount; i++) {
+                    const startIdx = Math.floor(particleCount * 0.6); // tight cluster boundary
+                    let a = startIdx + Math.floor(Math.random() * (particleCount * 0.4));
+                    let b = a + Math.floor(Math.random() * 30);
+                    if (b >= particleCount) b = a - 10;
+                    arcPairs[i] = {a, b};
+                }
+            }
 
             // Approximate Mouse to world mapping
             const worldMouseX = (mouseX / windowHalfX) * 45;
@@ -559,23 +646,42 @@
                 let basY = pt.y + data.offsetY + waveOffset;
                 let basZ = pt.z + data.offsetZ;
 
-                // Physics: Huge Individual Mouse Repulsion
+                // Physics: Magnetic Lasso & Shockwave Explosion
                 let pushX = 0;
                 let pushY = 0;
                 let pushZ = 0;
                 
+                // Shockwave Displacement Math
+                if (shockwave.active) {
+                    let sdx = basX - shockwave.x;
+                    let sdy = basY - shockwave.y;
+                    let sdist = Math.sqrt(sdx*sdx + sdy*sdy);
+                    let rimDist = Math.abs(sdist - shockwave.radius);
+                    if (rimDist < 10 && sdist > 0.1) {
+                        let sForce = (10 - rimDist)/10 * 15.0; // Explosion force
+                        pushX += (sdx/sdist) * sForce;
+                        pushY += (sdy/sdist) * sForce;
+                        pushZ += sForce;
+                    }
+                }
+
                 if (mouseY !== -1000) {
                     const dx = basX - worldMouseX;
                     const dy = basY - worldMouseY;
                     const distSq = dx*dx + dy*dy;
 
-                    if (distSq < 1500) { // Massive radius of interaction
-                        const force = (1500 - distSq) / 1500; 
-                        const dist = Math.sqrt(distSq);
-                        if (dist > 0.001) {
-                            pushX = (dx / dist) * force * 18.0; // Violent push
-                            pushY = (dy / dist) * force * 18.0;
-                            pushZ = force * 12.0; 
+                    if (distSq < 2000) { // Massive magnetic gravity well
+                        const force = (2000 - distSq) / 2000; 
+                        
+                        if (distSq > 150) {
+                            // Phase 1: Gravity Pull (Lasso Inward)
+                            pushX -= dx * force * 0.08;
+                            pushY -= dy * force * 0.08;
+                        } else {
+                            // Phase 2: Orthogonal Orbit (Swirling Swarm)
+                            pushX += (-dy) * force * 0.25;
+                            pushY += (dx) * force * 0.25;
+                            pushZ += (Math.random()-0.5) * 2.0; // slight turbulence
                         }
                     }
                 }
@@ -588,6 +694,47 @@
                 );
             }
             posAttr.needsUpdate = true;
+
+            // Render Neural Lightning Arcs
+            const arcPosArr = arcMesh.geometry.attributes.position.array;
+            for(let i=0; i<arcCount; i++) {
+                const pA = arcPairs[i].a * 3;
+                const pB = arcPairs[i].b * 3;
+                
+                // Track positions dynamically
+                arcPosArr[i*6 + 0] = posAttr.array[pA + 0];
+                arcPosArr[i*6 + 1] = posAttr.array[pA + 1];
+                arcPosArr[i*6 + 2] = posAttr.array[pA + 2];
+                arcPosArr[i*6 + 3] = posAttr.array[pB + 0];
+                arcPosArr[i*6 + 4] = posAttr.array[pB + 1];
+                arcPosArr[i*6 + 5] = posAttr.array[pB + 2];
+            }
+            arcMesh.geometry.attributes.position.needsUpdate = true;
+
+            // Render Holographic Data Swarm Layer
+            for(let i=0; i<hCount*2; i++) {
+                const hd = hData[i];
+                hd.progress += hd.speed;
+                if(hd.progress > 1) hd.progress = 0;
+                hd.rotX += hd.rotSpeed;
+                hd.rotY += hd.rotSpeed;
+
+                const pt = splines[hd.splineIndex].getPointAt(hd.progress);
+                const wOff = Math.sin(time + pt.x * 0.05) * 1.5;
+
+                const dummy = hd.isRing ? ringDummy : crossDummy;
+                dummy.position.set(pt.x + hd.offsetX, pt.y + hd.offsetY + wOff, pt.z + hd.offsetZ);
+                dummy.rotation.set(hd.rotX, hd.rotY, 0);
+                dummy.updateMatrix();
+
+                if(hd.isRing) {
+                    ringMesh.setMatrixAt(hd.index, dummy.matrix);
+                } else {
+                    crossMesh.setMatrixAt(hd.index, dummy.matrix);
+                }
+            }
+            ringMesh.instanceMatrix.needsUpdate = true;
+            crossMesh.instanceMatrix.needsUpdate = true;
 
             renderer.render(scene, camera);
         }
