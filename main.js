@@ -396,9 +396,9 @@
             // Draw Silver line along curve with heavy glow
             const pointsGeo = new THREE.BufferGeometry().setFromPoints(curve.getPoints(150));
             const lineMat = new THREE.LineBasicMaterial({ 
-                color: 0xffffff, // Brighter white/silver
+                color: 0xffcc00, // Rich Golden glow
                 transparent: true, 
-                opacity: 0.8,    // Very intense glow
+                opacity: 0.85,   // Intense glow
                 blending: THREE.AdditiveBlending
             });
             const splineObject = new THREE.Line(pointsGeo, lineMat);
@@ -408,7 +408,7 @@
         }
 
         // ── PARTICLES ALONG THREADS ──
-        const particleCount = window.innerWidth > 768 ? 2800 : 1000; // Scaled up heavily
+        const particleCount = window.innerWidth > 768 ? 5600 : 2000; // Doubled count
         const pGeo = new THREE.BufferGeometry();
         const pPos = new Float32Array(particleCount * 3);
         const pColors = new Float32Array(particleCount * 3);
