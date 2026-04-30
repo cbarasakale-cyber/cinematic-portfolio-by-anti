@@ -935,6 +935,7 @@ img { display: block; max-width: 100%; }
     box-shadow: 0 10px 30px rgba(0,0,0,0.4);
     transition: all 0.5s var(--ease-out);
     transform-style: preserve-3d;
+    will-change: transform;
 }
 
 /* For shorts, let's keep a consistent aspect ratio in the 3-col grid */
@@ -951,13 +952,14 @@ img { display: block; max-width: 100%; }
     inset: -5%; /* slightly larger for zoom */
     background-size: cover;
     background-position: center;
-    transform: scale(1.4) translateY(var(--parallax-y, 0%)); /* Defaults zoomed in + Parallax Shift */
+    transform: scale(1.4) translateZ(0); /* Removed parallax CSS var to fix lag */
     transition: transform 1.2s cubic-bezier(0.19, 1, 0.22, 1), filter 1.2s ease;
     z-index: 1;
+    will-change: transform;
 }
 
 .cinematic-card:hover .card-thumb {
-    transform: scale(1.1) translateY(var(--parallax-y, 0%)); /* Focus bounce without snapping parallax */
+    transform: scale(1.1) translateZ(0);
     filter: brightness(0.7) contrast(1.2);
 }
 

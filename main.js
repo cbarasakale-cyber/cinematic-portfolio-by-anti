@@ -1020,14 +1020,14 @@
                 }
             });
 
-            // Phase 4: Internal Parallax Background Masking via CSS transform variable
+            // Phase 4: Internal Parallax via GSAP yPercent (Hardware Accelerated)
             section.querySelectorAll(".video-card").forEach(card => {
                 const thumb = card.querySelector('.card-thumb');
                 if(thumb) {
                     gsap.fromTo(thumb, 
-                        { "--parallax-y": "-15%" },
+                        { yPercent: -5 },
                         {
-                            "--parallax-y": "15%",
+                            yPercent: 5,
                             ease: "none",
                             scrollTrigger: {
                                 trigger: card,
@@ -1049,24 +1049,32 @@
         const cards = document.querySelectorAll(".tilt-card");
 
         cards.forEach(card => {
+            let ticking = false;
+            
             card.addEventListener("mousemove", (e) => {
-                const rect = card.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                
-                const centerX = rect.width / 2;
-                const centerY = rect.height / 2;
-                
-                const rotateX = ((y - centerY) / centerY) * -8; // max 8 deg
-                const rotateY = ((x - centerX) / centerX) * 8;
-                
-                gsap.to(card, {
-                    rotateX: rotateX,
-                    rotateY: rotateY,
-                    transformPerspective: 1000,
-                    ease: "power1.out",
-                    duration: 0.4
-                });
+                if (!ticking) {
+                    window.requestAnimationFrame(() => {
+                        const rect = card.getBoundingClientRect();
+                        const x = e.clientX - rect.left;
+                        const y = e.clientY - rect.top;
+                        
+                        const centerX = rect.width / 2;
+                        const centerY = rect.height / 2;
+                        
+                        const rotateX = ((y - centerY) / centerY) * -8; // max 8 deg
+                        const rotateY = ((x - centerX) / centerX) * 8;
+                        
+                        gsap.to(card, {
+                            rotateX: rotateX,
+                            rotateY: rotateY,
+                            transformPerspective: 1000,
+                            ease: "power1.out",
+                            duration: 0.4
+                        });
+                        ticking = false;
+                    });
+                    ticking = true;
+                }
             });
 
             card.addEventListener("mouseleave", () => {
