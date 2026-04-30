@@ -28,8 +28,12 @@ sitemapUrls += `  <url>\n    <loc>${BASE_URL}/</loc>\n    <lastmod>${new Date().
 console.log(`Starting generation of ${cities.length} location pages...`);
 
 cities.forEach(city => {
-    // URL friendly slug
-    const citySlug = city.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    // URL friendly slug (Normalize to remove accents/diacritics)
+    const citySlug = city.normalize('NFD')
+                        .replace(/[\u0300-\u036f]/g, "")
+                        .toLowerCase()
+                        .replace(/[^a-z0-9]+/g, '-')
+                        .replace(/(^-|-$)/g, '');
     const pageUrl = `${BASE_URL}/locations/${citySlug}.html`;
     
     let html = baseHtml;
