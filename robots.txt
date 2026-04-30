@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://chandrakantpb.co.in/sitemap.xml
