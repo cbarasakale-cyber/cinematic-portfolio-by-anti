@@ -661,24 +661,38 @@ img { display: block; max-width: 100%; }
 }
 
 .hero-subtitle {
-    font-size: clamp(0.9rem, 2vw, 1.4rem);
-    font-weight: 400;
-    letter-spacing: 0.25em;
+    font-size: clamp(0.75rem, 1.2vw, 0.95rem);
+    font-weight: 600;
+    letter-spacing: 0.2em;
     text-transform: uppercase;
-    color: var(--text-dim);
-    margin-bottom: 2rem;
+    color: rgba(255, 255, 255, 0.5);
+    margin-bottom: 1.5rem;
     opacity: 0;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.8;
 }
 
 .hero-tagline {
-    font-size: clamp(1.1rem, 2.5vw, 1.8rem);
+    font-size: clamp(1.1rem, 2vw, 1.4rem);
     font-weight: 300;
     font-style: italic;
-    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    color: var(--text-dim);
+    opacity: 0;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.6;
+    text-wrap: balance;
+}
+
+.hero-tagline-highlight {
+    background: linear-gradient(90deg, var(--accent2), var(--accent));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    opacity: 0;
+    font-weight: 500;
 }
 
 /* Scroll Indicator */
