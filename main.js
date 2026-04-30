@@ -516,9 +516,9 @@
         camera.position.z = 60;
         window.__threeCamera = camera; // Export for Phase 5 Void Transitions
 
-        const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+        const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: window.innerWidth > 768 });
         renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5)); // Capped at 1.5x for massive mobile GPU performance gains
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.25)); // Lowered cap for buttery smooth scrolling
 
         const mainGroup = new THREE.Group();
         scene.add(mainGroup);
@@ -633,7 +633,7 @@
         });
 
         // ── PARTICLES ALONG THREADS ──
-        const particleCount = window.innerWidth > 768 ? 8000 : 4000; // Scaled down for safe massive VFX overhead
+        const particleCount = window.innerWidth > 768 ? 2000 : 1000; // Reduced significantly for lag-free scroll performance
         const pGeo = new THREE.BufferGeometry();
         const pPos = new Float32Array(particleCount * 3);
         const pColors = new Float32Array(particleCount * 3);
