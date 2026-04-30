@@ -60,12 +60,6 @@ cities.forEach(city => {
         `<link rel="canonical" href="${pageUrl}" />`
     );
     
-    // Visual Updates
-    html = html.replace(
-        /<h1 class="hero-title" id="heroTitle">.*?<\/h1>/,
-        `<h1 class="hero-title" id="heroTitle" style="font-size: clamp(3rem, 8vw, 8rem);">VIDEO EDITOR IN ${city.toUpperCase()}</h1>`
-    );
-
     // Save File
     const outputPath = path.join(LOCATIONS_DIR, `${citySlug}.html`);
     fs.writeFileSync(outputPath, html, 'utf8');
