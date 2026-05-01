@@ -1314,24 +1314,100 @@ img { display: block; max-width: 100%; }
     line-height: 1.5;
 }
 
+/* ═══════════════════════════════════════
+   SEO FOOTER
+   ═══════════════════════════════════════ */
+.seo-footer {
+    background: #050505;
+    padding: 6rem 2rem 3rem;
+    border-top: 1px solid rgba(255,255,255,0.03);
+    position: relative;
+    z-index: 10;
+}
+
+.seo-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 4rem;
+}
+
+.seo-column h3 {
+    font-size: 0.9rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    margin-bottom: 1.5rem;
+}
+
+.seo-column p {
+    font-size: 0.9rem;
+    color: var(--text-dim);
+    line-height: 1.6;
+    max-width: 400px;
+    margin-bottom: 2rem;
+}
+
+.seo-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem 2rem;
+}
+
+.seo-links a {
+    color: rgba(255,255,255,0.4);
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.seo-links a:hover {
+    color: var(--accent);
+}
+
+.seo-column ul {
+    list-style: none;
+    padding: 0;
+}
+
+.seo-column ul li {
+    font-size: 0.9rem;
+    color: var(--text-dim);
+    margin-bottom: 0.8rem;
+    position: relative;
+    padding-left: 1.5rem;
+}
+
+.seo-column ul li::before {
+    content: "→";
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+    opacity: 0.5;
+}
+
+.footer-bottom {
+    max-width: 1200px;
+    margin: 4rem auto 0;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(255,255,255,0.05);
+    text-align: center;
+}
+
+.footer-bottom p {
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.2);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
 @media (max-width: 768px) {
-    .timeline-track {
-        left: 16px;
-        transform: none;
-    }
-    .timeline-item,
-    .timeline-item[data-side="left"],
-    .timeline-item[data-side="right"] {
-        width: 100%;
-        margin-left: 0;
-        padding-left: 3rem;
-        padding-right: 0;
-        text-align: left;
-    }
-    .timeline-item[data-side="left"] .timeline-dot,
-    .timeline-item[data-side="right"] .timeline-dot {
-        left: 8px;
-        right: auto;
+    .seo-container {
+        grid-template-columns: 1fr;
+        gap: 3rem;
     }
 }
 
