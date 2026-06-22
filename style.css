@@ -2333,3 +2333,13 @@ img { display: block; max-width: 100%; }
 .audio-toggle.active .audio-text {
     color: var(--accent);
 }
+
+/* Disable Edge Visual Search / Hover Menu overlays on images */
+.gd-logo-img,
+.gd-poster-img,
+.gd-vcard-img,
+.img-lightbox img,
+.flip-front img,
+.flip-back img {
+    pointer-events: none;
+}
