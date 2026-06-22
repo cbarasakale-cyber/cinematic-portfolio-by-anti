@@ -273,39 +273,14 @@
         });
         gsap.ticker.lagSmoothing(0);
 
-        // Smooth scroll for anchor links with Void Transition
+        // Smooth scroll for anchor links
         document.querySelectorAll("[data-scroll]").forEach((link) => {
             link.addEventListener("click", (e) => {
                 e.preventDefault();
                 const target = document.querySelector(link.getAttribute("href"));
                 if (target) {
-                    if (window.__threeCamera) {
-                        // Phase 5: Void Camera Transition
-                        const cam = window.__threeCamera;
-                        if(typeof uiAudio !== 'undefined' && uiAudio.enabled) uiAudio.playBoom();
-                        
-                        const faders = document.querySelectorAll("body > *:not(#threeBackground):not(.audio-toggle):not(script)");
-                        gsap.to(faders, { opacity: 0, duration: 0.5, ease: 'power2.in' });
-                        gsap.to(cam.position, {
-                            z: -200, // Plunge forward into the deep grid
-                            duration: 0.6,
-                            ease: 'power4.in',
-                            onComplete: () => {
-                                // Teleport physical scroll directly behind the blackout
-                                lenis.scrollTo(target, { offset: -40, duration: 0, immediate: true });
-                                
-                                // Reset camera way back for snap-in effect
-                                cam.position.z = 250; 
-
-                                // Fly camera physically back to default position out of the void
-                                gsap.to(cam.position, { z: 60, duration: 1.5, ease: 'expo.out' });
-                                gsap.to(faders, { opacity: 1, duration: 0.8, ease: 'power2.out', delay: 0.1 });
-                            }
-                        });
-                    } else {
-                        // Fallback
-                        lenis.scrollTo(target, { offset: -40, duration: 1.5 });
-                    }
+                    if(typeof uiAudio !== 'undefined' && uiAudio.enabled) uiAudio.playTick();
+                    lenis.scrollTo(target, { offset: -40, duration: 1.5 });
                 }
                 // Close mobile menu if open
                 closeMobileMenu();
