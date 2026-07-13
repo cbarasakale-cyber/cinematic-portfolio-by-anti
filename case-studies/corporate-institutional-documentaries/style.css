@@ -1,0 +1,465 @@
+/* ═══════════════════════════════════════════════════════════
+   CASE STUDY 03 — CORPORATE & INSTITUTIONAL DOCUMENTARIES
+   Theme: Pristine, Deep Corporate Blue, Minimal Slate, Professional
+   ═══════════════════════════════════════════════════════════ */
+
+:root {
+  --cs3-bg-primary: #0a0f18; /* Deep corporate slate blue */
+  --cs3-bg-secondary: #111827; /* Lighter slate */
+  --cs3-bg-tertiary: #1f2937; /* Card background */
+  
+  --cs3-text-primary: #f9fafb;
+  --cs3-text-secondary: #d1d5db;
+  --cs3-text-dim: #9ca3af;
+  
+  --cs3-accent-1: #3b82f6; /* Professional royal blue */
+  --cs3-accent-2: #10b981; /* Emerald green */
+  --cs3-accent-3: #f59e0b; /* Amber gold */
+  
+  --cs3-accent-glow: rgba(59, 130, 246, 0.4);
+  
+  --cs3-border: rgba(255, 255, 255, 0.08);
+  --cs3-radius: 6px; /* Sharper, cleaner borders for corporate feel */
+  --cs3-radius-lg: 12px;
+  
+  --cs3-font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --cs3-font-heading: 'Outfit', 'Inter', sans-serif;
+}
+
+/* ─── Base Reset & Smooth Scroll ─── */
+html {
+  scroll-behavior: smooth;
+}
+
+body.cs3-body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--cs3-bg-primary);
+  color: var(--cs3-text-primary);
+  font-family: var(--cs3-font-sans);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── Background Ambient Elements ─── */
+.cs3-bg-element {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(120px);
+  z-index: -1;
+  opacity: 0.3;
+  pointer-events: none;
+}
+.cs3-bg-glow-1 {
+  width: 60vw;
+  height: 60vw;
+  background: radial-gradient(circle, var(--cs3-accent-glow) 0%, transparent 70%);
+  top: -20vh;
+  right: -10vw;
+}
+.cs3-bg-glow-2 {
+  width: 50vw;
+  height: 50vw;
+  background: radial-gradient(circle, rgba(29, 78, 216, 0.2) 0%, transparent 70%);
+  bottom: -10vh;
+  left: -10vw;
+}
+
+/* ─── Navigation & Back Button ─── */
+.cs3-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 24px 5%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 100;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  background: rgba(10, 15, 24, 0.8);
+  border-bottom: 1px solid var(--cs3-border);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
+}
+
+.cs3-nav.hidden {
+  transform: translateY(-100%);
+}
+
+.cs3-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--cs3-text-secondary);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.9rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+}
+
+.cs3-back-btn svg {
+  width: 20px;
+  height: 20px;
+  transition: transform 0.3s ease;
+}
+
+.cs3-back-btn:hover {
+  color: var(--cs3-text-primary);
+}
+.cs3-back-btn:hover svg {
+  transform: translateX(-4px);
+}
+
+.cs3-nav-label {
+  font-family: var(--cs3-font-heading);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  font-size: 0.85rem;
+  color: var(--cs3-accent);
+  text-transform: uppercase;
+}
+
+/* ─── Layout Containers ─── */
+.cs3-container {
+  max-width: 900px; /* Reduced to enforce single column feel */
+  margin: 0 auto;
+  padding: 0 5%;
+}
+.cs3-container-narrow {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 5%;
+}
+
+/* ─── Hero Section ─── */
+.cs3-hero {
+  padding: 180px 0 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+}
+
+.cs3-eyebrow-wrap {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.cs3-eyebrow {
+  font-family: var(--cs3-font-heading);
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  font-size: 0.85rem;
+  color: var(--cs3-text-dim);
+  text-transform: uppercase;
+}
+.cs3-eyebrow-badge {
+  background: rgba(59, 130, 246, 0.1);
+  color: var(--cs3-accent);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.cs3-hero-title {
+  font-family: var(--cs3-font-heading);
+  font-size: clamp(36px, 5vw, 64px);
+  line-height: 1.15;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, #ffffff 0%, var(--cs3-accent-3) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+  margin-bottom: 30px;
+  max-width: 1000px;
+}
+
+/* ─── Video Layout Placeholder ─── */
+.cs3-video-grid {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3rem;
+  width: 100%;
+  margin: 40px auto 0;
+  max-width: 900px;
+}
+
+.cs3-video-placeholder {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: var(--cs3-bg-secondary);
+  border: 1px solid var(--cs3-border);
+  border-radius: var(--cs3-radius);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  max-width: 800px;
+}
+
+.cs3-video-placeholder::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 10px,
+    rgba(255, 255, 255, 0.02) 10px,
+    rgba(255, 255, 255, 0.02) 20px
+  );
+  opacity: 0.5;
+}
+
+.cs3-video-play-icon {
+  width: 64px;
+  height: 64px;
+  background: var(--cs3-bg-tertiary);
+  border: 1px solid var(--cs3-border);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--cs3-text-secondary);
+  z-index: 2;
+  transition: all 0.3s ease;
+}
+.cs3-video-play-icon svg {
+  width: 24px;
+  height: 24px;
+  margin-left: 4px;
+}
+
+.cs3-video-label {
+  margin-top: 16px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  color: var(--cs3-text-dim);
+  text-transform: uppercase;
+  z-index: 2;
+}
+
+/* ─── General Section Styling ─── */
+.cs3-section {
+  padding: 80px 0;
+}
+
+.cs3-section-header {
+  margin-bottom: 40px;
+  position: relative;
+}
+
+.cs3-meta-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  color: var(--cs3-accent);
+  text-transform: uppercase;
+  margin-bottom: 16px;
+  display: block;
+}
+
+.cs3-section-rule {
+  border: none;
+  height: 1px;
+  background: var(--cs3-border);
+  margin: 0 0 32px 0;
+}
+
+.cs3-section-heading {
+  font-family: var(--cs3-font-heading);
+  font-size: clamp(28px, 4vw, 42px);
+  line-height: 1.2;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  color: var(--cs3-text-primary);
+  margin-bottom: 0;
+  position: relative;
+  z-index: 2;
+}
+
+/* ─── Motion Graphics Elements ─── */
+.cs3-mg-element {
+  position: absolute;
+  opacity: 0.15;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.mg-spin {
+  animation: mgSpin 12s linear infinite;
+}
+.mg-pulse {
+  animation: mgPulse 4s ease-in-out infinite;
+}
+.mg-float {
+  animation: mgFloat 6s ease-in-out infinite;
+}
+
+@keyframes mgSpin {
+  100% { transform: rotate(360deg); }
+}
+@keyframes mgPulse {
+  0%, 100% { transform: scale(1); opacity: 0.15; }
+  50% { transform: scale(1.1); opacity: 0.3; }
+}
+@keyframes mgFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+/* ─── Typography & Paragraphs ─── */
+p.cs3-body-text, 
+p.cs3-overview-text {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: var(--cs3-text-secondary);
+  margin-bottom: 24px;
+}
+
+/* ─── Layout Cards (The Strategy) ─── */
+.cs3-card-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 32px;
+  margin-top: 40px;
+}
+
+.cs3-strategy-card {
+  background: var(--cs3-bg-secondary);
+  border: 1px solid var(--cs3-border);
+  border-radius: var(--cs3-radius);
+  padding: 40px;
+  transition: transform 0.4s ease, border-color 0.4s ease;
+}
+
+.cs3-strategy-card:hover {
+  transform: translateY(-5px);
+  border-color: rgba(59, 130, 246, 0.4);
+}
+
+.cs3-card-num {
+  font-family: var(--cs3-font-heading);
+  font-size: 2.5rem;
+  font-weight: 300;
+  color: var(--cs3-text-dim);
+  opacity: 0.5;
+  margin-bottom: 24px;
+  display: block;
+}
+
+.cs3-card-title {
+  font-family: var(--cs3-font-heading);
+  font-size: 1.3rem;
+  font-weight: 500;
+  color: var(--cs3-text-primary);
+  margin-bottom: 16px;
+  line-height: 1.4;
+}
+
+.cs3-card-desc {
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--cs3-text-dim);
+  margin: 0;
+}
+
+/* ─── Profile List Styles ─── */
+.cs3-profile-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.cs3-profile-item {
+  background: var(--cs3-bg-secondary);
+  border-left: 4px solid var(--cs3-accent-1);
+  padding: 32px;
+  border-radius: 0 var(--cs3-radius) var(--cs3-radius) 0;
+}
+.cs3-profile-item:nth-child(2) {
+  border-left-color: var(--cs3-accent-2);
+}
+.cs3-profile-item:nth-child(3) {
+  border-left-color: var(--cs3-accent-3);
+}
+
+.cs3-profile-title {
+  font-family: var(--cs3-font-heading);
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--cs3-text-primary);
+  margin-bottom: 12px;
+}
+
+.cs3-profile-desc {
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: var(--cs3-text-secondary);
+  margin: 0;
+}
+
+/* ─── Footer ─── */
+.cs3-footer {
+  text-align: center;
+  padding: 80px 0;
+  border-top: 1px solid var(--cs3-border);
+  margin-top: 60px;
+}
+
+.cs3-footer-content {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* ─── Animations & Utility ─── */
+.fade-slide-up {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1), transform 1s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.fade-slide-up.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Text Mask Reveal (Word by Word) */
+.text-mask-reveal .word {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+  margin-right: 0.25em; /* spacing between words */
+}
+
+.text-mask-reveal .word-inner {
+  display: inline-block;
+  transform: translateY(110%);
+  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  background: linear-gradient(180deg, #ffffff 40%, var(--cs3-text-dim) 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+  color: transparent !important;
+}
+
+.text-mask-reveal.visible .word-inner {
+  transform: translateY(0);
+}

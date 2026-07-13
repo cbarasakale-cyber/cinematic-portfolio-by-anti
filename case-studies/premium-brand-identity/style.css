@@ -1,0 +1,405 @@
+/* ═══════════════════════════════════════════════════════════
+   CASE STUDY 04 — PREMIUM BRAND IDENTITY
+   Theme: Obsidian Studio, Spatial Grids, Fluid Motion
+   ═══════════════════════════════════════════════════════════ */
+
+:root {
+  --cs4-bg-dark: #030303;
+  --cs4-bg-obsidian: #0a0a0a;
+  --cs4-bg-card: rgba(18, 18, 18, 0.6);
+  
+  --cs4-text-primary: #ffffff;
+  --cs4-text-secondary: #a1a1aa;
+  --cs4-text-dim: #52525b;
+  
+  --cs4-grid-line: rgba(255, 255, 255, 0.06);
+  
+  /* 4 Premium Neon Colors */
+  --cs4-color-1: #eab308; /* Neon Gold */
+  --cs4-color-2: #3b82f6; /* Neon Blue */
+  --cs4-color-3: #ec4899; /* Neon Magenta */
+  --cs4-color-4: #10b981; /* Neon Emerald */
+  
+  --cs4-accent-neon: var(--cs4-color-1); /* Fallback/Default */
+  
+  --cs4-font-sans: 'Inter', sans-serif;
+  --cs4-font-serif: 'Outfit', sans-serif; /* Using Outfit as the sleek header font */
+}
+
+html { scroll-behavior: smooth; }
+
+body.cs4-body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--cs4-bg-dark);
+  color: var(--cs4-text-primary);
+  font-family: var(--cs4-font-sans);
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* ─── Background Studio Grid ─── */
+.cs4-bg-grid {
+  position: fixed;
+  inset: 0;
+  background-image: 
+    linear-gradient(to right, var(--cs4-grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--cs4-grid-line) 1px, transparent 1px);
+  background-size: 100px 100px;
+  z-index: -2;
+  pointer-events: none;
+}
+.cs4-bg-gradient {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at 50% 0%, rgba(255,255,255,0.03) 0%, transparent 70%);
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* ─── Navigation ─── */
+.cs4-nav {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  padding: 24px 5%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 100;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  background: rgba(3, 3, 3, 0.8);
+  border-bottom: 1px solid var(--cs4-grid-line);
+  box-sizing: border-box;
+}
+
+.cs4-back-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--cs4-text-secondary);
+  text-decoration: none;
+  font-size: 0.85rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  transition: color 0.3s;
+}
+.cs4-back-btn:hover { color: var(--cs4-text-primary); }
+
+/* ─── Layout ─── */
+.cs4-layout {
+  display: flex;
+  min-height: 100vh;
+  position: relative;
+}
+
+/* ─── Fluid Line Thread (Left Margin) ─── */
+.cs4-thread-container {
+  width: 100px;
+  flex-shrink: 0;
+  position: relative;
+  display: none;
+}
+@media (min-width: 1024px) {
+  .cs4-thread-container { display: block; }
+}
+.cs4-thread-svg {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2px;
+  height: 100%;
+  overflow: visible;
+}
+.cs4-thread-path {
+  fill: none;
+  stroke: var(--cs4-accent-neon);
+  stroke-width: 2;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 8px var(--cs4-accent-neon));
+}
+
+/* ─── Main Content Area ─── */
+.cs4-content {
+  flex-grow: 1;
+  padding: 180px 5% 100px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* ─── Text-Mask Glides (System 1) ─── */
+.tm-wrap {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+}
+.tm-inner {
+  display: inline-block;
+  transform: translateY(110%);
+  transition: transform 1s cubic-bezier(0.25, 1, 0.5, 1);
+}
+.tm-wrap.visible .tm-inner {
+  transform: translateY(0);
+}
+
+/* ─── Typography ─── */
+.cs4-hero-heading-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 40px;
+}
+.cs4-h1 {
+  font-family: var(--cs4-font-serif);
+  font-size: clamp(2.5rem, 5vw, 4.5rem);
+  font-weight: 300;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  margin-bottom: 0;
+  background: linear-gradient(135deg, #ffffff 0%, #eab308 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+}
+.cs4-h2 {
+  font-family: var(--cs4-font-serif);
+  font-size: clamp(2rem, 3vw, 3rem);
+  font-weight: 300;
+  margin-bottom: 40px;
+  color: var(--cs4-text-primary);
+}
+.cs4-h3 {
+  font-family: var(--cs4-font-sans);
+  font-size: 1.25rem;
+  font-weight: 400;
+  color: var(--cs4-text-primary);
+  margin-bottom: 16px;
+  letter-spacing: 0.02em;
+}
+.cs4-p {
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: var(--cs4-text-secondary);
+  margin-bottom: 24px;
+}
+.cs4-label {
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--cs4-accent-neon);
+  margin-bottom: 24px;
+  display: block;
+}
+
+/* ─── Gallery Placeholder Grid ─── */
+.cs4-gallery-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+  margin: 60px 0;
+}
+@media (min-width: 768px) {
+  .cs4-gallery-grid { grid-template-columns: 1fr 1fr; }
+}
+
+.cs4-gallery-item {
+  aspect-ratio: 4/3;
+  background: var(--cs4-bg-obsidian);
+  border: 1px solid var(--cs4-grid-line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--cs4-text-dim);
+  font-size: 0.85rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* ─── 3D Spatial Grid Cards (System 3) ─── */
+.cs4-3d-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 32px;
+  margin: 40px 0;
+  perspective: 1000px;
+}
+@media (min-width: 768px) {
+  .cs4-3d-grid { grid-template-columns: 1fr 1fr; }
+}
+
+.cs4-card-3d {
+  background: var(--cs4-bg-card);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--cs4-grid-line);
+  padding: 40px;
+  border-radius: 8px;
+  transform-style: preserve-3d;
+  transition: transform 0.1s ease-out, border-color 0.4s, box-shadow 0.4s;
+  will-change: transform;
+}
+.cs4-card-3d:hover {
+  border-color: var(--cs4-color-2);
+  box-shadow: 0 10px 40px rgba(59, 130, 246, 0.1);
+}
+.cs4-card-3d:nth-child(2):hover {
+  border-color: var(--cs4-color-3);
+  box-shadow: 0 10px 40px rgba(236, 72, 153, 0.1);
+}
+.cs4-card-3d:nth-child(3):hover {
+  border-color: var(--cs4-color-4);
+  box-shadow: 0 10px 40px rgba(16, 185, 129, 0.1);
+}
+.cs4-card-content {
+  transform: translateZ(30px); /* Pushes content forward in 3D space */
+}
+
+/* ─── Interactive Asset Layering (System 4) ─── */
+.cs4-asset-module {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16/9;
+  border: 1px solid var(--cs4-grid-line);
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 32px;
+  cursor: crosshair;
+}
+
+/* Technical Layer (Underneath) */
+.cs4-asset-tech {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 10px,
+    rgba(234, 179, 8, 0.05) 10px,
+    rgba(234, 179, 8, 0.05) 20px
+  ), #0a0a0a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+.cs4-asset-tech-lines {
+  position: absolute;
+  inset: 20px;
+  border: 1px dashed rgba(234, 179, 8, 0.3);
+}
+
+/* Presentation Layer (Top) */
+.cs4-asset-present {
+  position: absolute;
+  inset: 0;
+  background: #111;
+  z-index: 2;
+  transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--cs4-text-secondary);
+  font-size: 0.9rem;
+  letter-spacing: 0.1em;
+}
+.cs4-asset-present img {
+  transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* Hover State: Scale image up */
+.cs4-asset-module:hover .cs4-asset-present img {
+  transform: scale(1.05);
+}
+
+/* ─── Lightbox Modal ─── */
+.cs4-lightbox {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.9);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+.cs4-lightbox.active {
+  opacity: 1;
+  pointer-events: all;
+  cursor: zoom-out;
+}
+.cs4-lightbox img {
+  max-width: 90vw;
+  max-height: 90vh;
+  object-fit: contain;
+  border-radius: 4px;
+  box-shadow: 0 0 40px rgba(0,0,0,0.5);
+  transform: scale(0.95);
+  transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+}
+.cs4-lightbox.active img {
+  transform: scale(1);
+}
+
+/* ─── Graphic Design Decorative Elements ─── */
+.cs4-vector-element {
+  position: absolute;
+  pointer-events: none;
+  opacity: 0.15;
+  z-index: 0;
+  color: var(--cs4-accent-neon);
+}
+
+/* ─── Utilities & Color Integration ─── */
+.cs4-section { margin-bottom: 120px; position: relative; }
+
+/* 4-Color Gradient Divider */
+.cs4-hr {
+  border: none;
+  height: 2px;
+  background: linear-gradient(90deg, var(--cs4-color-2), var(--cs4-color-3), var(--cs4-color-4), var(--cs4-color-1));
+  margin: 80px 0;
+  opacity: 0.5;
+  filter: drop-shadow(0 0 8px rgba(236, 72, 153, 0.4));
+}
+
+/* Color Classes for Labels/Text */
+.c-gold { color: var(--cs4-color-1) !important; }
+.c-blue { color: var(--cs4-color-2) !important; }
+.c-magenta { color: var(--cs4-color-3) !important; }
+.c-emerald { color: var(--cs4-color-4) !important; }
+
+/* ─── Motion Graphic Animations ─── */
+@keyframes spinSlow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+@keyframes floatGentle {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-15px); }
+  100% { transform: translateY(0); }
+}
+@keyframes pulseGlow {
+  0% { transform: scale(0.95); opacity: 0.1; }
+  50% { transform: scale(1.05); opacity: 0.3; }
+  100% { transform: scale(0.95); opacity: 0.1; }
+}
+
+.mg-spin {
+  animation: spinSlow 15s linear infinite;
+  transform-origin: center center;
+  will-change: transform;
+}
+.mg-float {
+  animation: floatGentle 6s ease-in-out infinite;
+  will-change: transform;
+}
+.mg-pulse {
+  animation: pulseGlow 4s ease-in-out infinite;
+  transform-origin: center center;
+  will-change: transform, opacity;
+}

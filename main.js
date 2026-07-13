@@ -118,9 +118,17 @@
 
         if (!loader) { bootSite(); return; }
 
+        // Skip intro if already played in this session
+        if (sessionStorage.getItem('introPlayed') === 'true') {
+            loader.style.display = "none";
+            bootSite();
+            return;
+        }
+
         // ── Create GSAP Timeline ──
         const tl = gsap.timeline({
             onComplete: () => {
+                sessionStorage.setItem('introPlayed', 'true');
                 loader.classList.add("fade-out");
                 setTimeout(() => {
                     loader.style.display = "none";
@@ -273,13 +281,13 @@
         });
         gsap.ticker.lagSmoothing(0);
 
-        // Smooth scroll for anchor links
+        // Smooth scroll for anchor links with Void Transition
         document.querySelectorAll("[data-scroll]").forEach((link) => {
             link.addEventListener("click", (e) => {
                 e.preventDefault();
                 const target = document.querySelector(link.getAttribute("href"));
                 if (target) {
-                    if(typeof uiAudio !== 'undefined' && uiAudio.enabled) uiAudio.playTick();
+                    // Standard smooth scroll (removing black void transition)
                     lenis.scrollTo(target, { offset: -40, duration: 1.5 });
                 }
                 // Close mobile menu if open
@@ -491,9 +499,9 @@
         camera.position.z = 60;
         window.__threeCamera = camera; // Export for Phase 5 Void Transitions
 
-        const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: window.innerWidth > 768 });
+        const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.25)); // Lowered cap for buttery smooth scrolling
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5)); // Capped at 1.5x for massive mobile GPU performance gains
 
         const mainGroup = new THREE.Group();
         scene.add(mainGroup);
@@ -608,7 +616,7 @@
         });
 
         // ── PARTICLES ALONG THREADS ──
-        const particleCount = window.innerWidth > 768 ? 2000 : 1000; // Reduced significantly for lag-free scroll performance
+        const particleCount = window.innerWidth > 768 ? 8000 : 4000; // Scaled down for safe massive VFX overhead
         const pGeo = new THREE.BufferGeometry();
         const pPos = new Float32Array(particleCount * 3);
         const pColors = new Float32Array(particleCount * 3);
@@ -995,14 +1003,14 @@
                 }
             });
 
-            // Phase 4: Internal Parallax via GSAP yPercent (Hardware Accelerated)
+            // Phase 4: Internal Parallax Background Masking via CSS transform variable
             section.querySelectorAll(".video-card").forEach(card => {
                 const thumb = card.querySelector('.card-thumb');
                 if(thumb) {
                     gsap.fromTo(thumb, 
-                        { yPercent: -5 },
+                        { "--parallax-y": "-15%" },
                         {
-                            yPercent: 5,
+                            "--parallax-y": "15%",
                             ease: "none",
                             scrollTrigger: {
                                 trigger: card,
@@ -1024,32 +1032,24 @@
         const cards = document.querySelectorAll(".tilt-card");
 
         cards.forEach(card => {
-            let ticking = false;
-            
             card.addEventListener("mousemove", (e) => {
-                if (!ticking) {
-                    window.requestAnimationFrame(() => {
-                        const rect = card.getBoundingClientRect();
-                        const x = e.clientX - rect.left;
-                        const y = e.clientY - rect.top;
-                        
-                        const centerX = rect.width / 2;
-                        const centerY = rect.height / 2;
-                        
-                        const rotateX = ((y - centerY) / centerY) * -8; // max 8 deg
-                        const rotateY = ((x - centerX) / centerX) * 8;
-                        
-                        gsap.to(card, {
-                            rotateX: rotateX,
-                            rotateY: rotateY,
-                            transformPerspective: 1000,
-                            ease: "power1.out",
-                            duration: 0.4
-                        });
-                        ticking = false;
-                    });
-                    ticking = true;
-                }
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                
+                const rotateX = ((y - centerY) / centerY) * -8; // max 8 deg
+                const rotateY = ((x - centerX) / centerX) * 8;
+                
+                gsap.to(card, {
+                    rotateX: rotateX,
+                    rotateY: rotateY,
+                    transformPerspective: 1000,
+                    ease: "power1.out",
+                    duration: 0.4
+                });
             });
 
             card.addEventListener("mouseleave", () => {
